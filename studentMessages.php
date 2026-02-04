@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Projects | SPARK'26</title>
-    <link rel="stylesheet" href="../style.css">
+    <title>Messages | SPARK'26</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
         .dashboard-header {
@@ -78,19 +78,19 @@
         <!-- Sidebar -->
         <aside class="d-sidebar">
             <div class="sidebar-header">
-                <a href="../index.html" class="logo">
+                <a href="index.php" class="logo">
                     <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                     SPARK <span>'26</span>
                 </a>
             </div>
             <div class="sidebar-menu">
-                <a href="studentDashboard.html" class="menu-item"><i class="ri-home-line"></i> Home</a>
-                <a href="studentProjects.html" class="menu-item active"><i class="ri-stack-line"></i> My Projects</a>
-                <a href="studentMessages.html" class="menu-item"><i class="ri-mail-line"></i> Messages</a>
-                <a href="studentResources.html" class="menu-item"><i class="ri-book-open-line"></i> Resources</a>
+                <a href="studentDashboard.php" class="menu-item"><i class="ri-home-line"></i> Home</a>
+                <a href="studentProjects.php" class="menu-item"><i class="ri-stack-line"></i> My Projects</a>
+                <a href="studentMessages.php" class="menu-item active"><i class="ri-mail-line"></i> Messages</a>
+                <a href="studentResources.php" class="menu-item"><i class="ri-book-open-line"></i> Resources</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="../login.html" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
             </div>
         </aside>
 
@@ -110,9 +110,9 @@
                     </div>
                     <div class="user-avatar">AM</div>
                     <div class="profile-dropdown" id="profileDropdown">
-                        <a href="../userProfile.html" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
+                        <a href="userProfile.php" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="../login.html" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
@@ -122,14 +122,14 @@
                 <!-- Page Header -->
                 <div class="welcome-card" style="min-height: 150px;">
                     <div class="welcome-text">
-                        <h2>My Projects</h2>
-                        <p>Manage my projects here.</p>
+                        <h2>Messages</h2>
+                        <p>Manage messages here.</p>
                     </div>
                 </div>
 
                 <div style="text-align:center; padding: 4rem; color: var(--text-muted);">
-                    <i class="ri-stack-line" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
-                    <h3>My Projects Module</h3>
+                    <i class="ri-mail-line" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+                    <h3>Messages Module</h3>
                     <p>This page has been created and linked.</p>
                 </div>
             </div>

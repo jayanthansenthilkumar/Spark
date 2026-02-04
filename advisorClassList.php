@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports | SPARK'26</title>
-    <link rel="stylesheet" href="../style.css">
+    <title>Class List | SPARK'26</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
         .dashboard-header {
@@ -20,48 +20,32 @@
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
             text-align: center;
-            transition: transform 0.2s;
         }
-        .stat-card:hover { transform: translateY(-2px); }
         .stat-val { font-size: 2rem; font-weight: 800; color: var(--primary); }
         .stat-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .manage-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .action-card {
+        .table-container {
             background: white;
-            padding: 1.5rem;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            cursor: pointer;
-            transition: border-color 0.2s;
+            overflow: hidden;
+            margin-top: 2rem;
         }
-        .action-card:hover { border-color: var(--primary); }
-        .ac-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg-surface); font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: var(--bg-surface); }
+        
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
         }
+        .st-pending { background: #fff7ed; color: #c2410c; }
+        .st-approved { background: #f0fdf4; color: #15803d; }
     </style>
 </head>
 
@@ -71,21 +55,19 @@
         <!-- Sidebar -->
         <aside class="d-sidebar">
             <div class="sidebar-header">
-                <a href="../index.html" class="logo">
+                <a href="index.php" class="logo">
                     <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                     SPARK <span>'26</span>
                 </a>
             </div>
             <div class="sidebar-menu">
-                <a href="expoCoordinator.html" class="menu-item"><i class="ri-grid-line"></i> Dashboard</a>
-                <a href="coordSchedule.html" class="menu-item"><i class="ri-calendar-line"></i> Schedule</a>
-                <a href="coordAnnouncements.html" class="menu-item"><i class="ri-bullhorn-line"></i> Announcements</a>
-                <a href="coordJudging.html" class="menu-item"><i class="ri-award-line"></i> Judging</a>
-                <a href="coordUsers.html" class="menu-item"><i class="ri-user-settings-line"></i> Users</a>
-                <a href="coordReports.html" class="menu-item active"><i class="ri-file-export-line"></i> Reports</a>
+                <a href="classAdvisor.php" class="menu-item"><i class="ri-grid-line"></i> Overview</a>
+                <a href="advisorClassList.php" class="menu-item active"><i class="ri-list-check"></i> Class List</a>
+                <a href="advisorReviews.php" class="menu-item"><i class="ri-clipboard-line"></i> Project Reviews</a>
+                <a href="advisorReports.php" class="menu-item"><i class="ri-bar-chart-line"></i> Reports</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="../login.html" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
             </div>
         </aside>
 
@@ -95,20 +77,19 @@
             <header class="d-header">
                 <div class="header-search">
                     <i class="ri-search-line"></i>
-                    <input type="text" placeholder="Search projects, students...">
+                    <input type="text" placeholder="Search students, projects...">
                 </div>
                 <!-- Profile -->
                 <div class="header-profile" onclick="toggleDropdown()">
                     <div class="user-info">
-                        <span class="user-name">Dr. Alan Grant</span>
-                        <span class="user-role">Coordinator</span>
+                        <span class="user-name">Prof. Sarah Connor</span>
+                        <span class="user-role">Class Advisor</span>
                     </div>
-                    <div class="user-avatar">AG</div>
+                    <div class="user-avatar">SC</div>
                     <div class="profile-dropdown" id="profileDropdown">
-                        <a href="../userProfile.html" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
-                        <a href="#" class="dropdown-item"><i class="ri-cog-line"></i> Settings</a>
+                        <a href="userProfile.php" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="../login.html" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
@@ -118,14 +99,14 @@
                 <!-- Page Header -->
                 <div class="welcome-card" style="min-height: 150px;">
                     <div class="welcome-text">
-                        <h2>Reports</h2>
-                        <p>Manage reports here.</p>
+                        <h2>Class List</h2>
+                        <p>Manage class list here.</p>
                     </div>
                 </div>
 
                 <div style="text-align:center; padding: 4rem; color: var(--text-muted);">
-                    <i class="ri-file-export-line" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
-                    <h3>Reports Module</h3>
+                    <i class="ri-list-check" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+                    <h3>Class List Module</h3>
                     <p>This page has been created and linked.</p>
                 </div>
             </div>
@@ -136,7 +117,6 @@
         function toggleDropdown() {
             document.getElementById('profileDropdown').classList.toggle('show');
         }
-
         window.onclick = function(event) {
             if (!event.target.closest('.header-profile')) {
                 var dropdowns = document.getElementsByClassName("profile-dropdown");

@@ -69,11 +69,11 @@
     <!-- Navbar (Simple) -->
     <nav class="navbar" style="position: relative;">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
+            <a href="index.php" class="logo">
                 <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                 SPARK <span>'26</span>
             </a>
-            <a href="index.html" class="btn-outline">Back to Home</a>
+            <a href="index.php" class="btn-outline">Back to Home</a>
         </div>
     </nav>
 
@@ -84,7 +84,7 @@
                 <h2>Welcome Back</h2>
                 <p style="color: var(--text-muted);">Login to manage your projects</p>
             </div>
-            <form action="studentDashboard.html"> <!-- For demo purposes linking to dashboard -->
+            <form action="studentDashboard.php"> <!-- For demo purposes linking to dashboard -->
                 <div class="form-group">
                     <label class="form-label">Email Address</label>
                     <input type="email" class="form-input" placeholder="student@college.edu" required>
@@ -102,7 +102,7 @@
                 <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">Login</button>
             </form>
             <div class="auth-footer">
-                Don't have an account? <a href="register.html">Register here</a>
+                Don't have an account? <a href="register.php">Register here</a>
             </div>
         </div>
     </div>

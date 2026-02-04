@@ -68,15 +68,15 @@
 
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
+            <a href="index.php" class="logo">
                 <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                 SPARK <span>'26</span>
             </a>
             <div class="nav-menu">
-                <a href="index.html" class="nav-link">Tracks</a>
-                <a href="index.html#register" class="nav-link">Register</a>
+                <a href="index.php" class="nav-link">Tracks</a>
+                <a href="index.php#register" class="nav-link">Register</a>
             </div>
-            <a href="index.html" class="btn-outline">Back to Expo</a>
+            <a href="index.php" class="btn-outline">Back to Expo</a>
         </div>
     </nav>
 

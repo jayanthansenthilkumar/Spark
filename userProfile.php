@@ -94,14 +94,14 @@
 
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
+            <a href="index.php" class="logo">
                 <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                 SPARK <span>'26</span>
             </a>
             <div class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.php" class="nav-link">Home</a>
             </div>
-            <a href="login.html" class="btn-outline">Logout</a>
+            <a href="login.php" class="btn-outline">Logout</a>
         </div>
     </nav>
 

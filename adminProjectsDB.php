@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings | SPARK'26</title>
-    <link rel="stylesheet" href="../style.css">
+    <title>Projects DB | SPARK'26</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
         .admin-layout {
@@ -36,20 +36,20 @@
         <!-- Sidebar -->
         <aside class="d-sidebar">
             <div class="sidebar-header">
-                <a href="../index.html" class="logo">
+                <a href="index.php" class="logo">
                     <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                     SPARK <span>'26</span>
                 </a>
             </div>
             <div class="sidebar-menu">
-                <a href="projectAdmin.html" class="menu-item"><i class="ri-dashboard-line"></i> Dashboard</a>
-                <a href="adminUsers.html" class="menu-item"><i class="ri-group-line"></i> Users</a>
-                <a href="adminProjectsDB.html" class="menu-item"><i class="ri-node-tree"></i> Projects DB</a>
-                <a href="adminDepartments.html" class="menu-item"><i class="ri-building-line"></i> Departments</a>
-                <a href="adminSettings.html" class="menu-item active"><i class="ri-settings-3-line"></i> Settings</a>
+                <a href="projectAdmin.php" class="menu-item"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="adminUsers.php" class="menu-item"><i class="ri-group-line"></i> Users</a>
+                <a href="adminProjectsDB.php" class="menu-item active"><i class="ri-node-tree"></i> Projects DB</a>
+                <a href="adminDepartments.php" class="menu-item"><i class="ri-building-line"></i> Departments</a>
+                <a href="adminSettings.php" class="menu-item"><i class="ri-settings-3-line"></i> Settings</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="../login.html" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
             </div>
         </aside>
 
@@ -69,9 +69,9 @@
                     </div>
                     <div class="user-avatar" style="background:#475569;">SA</div>
                     <div class="profile-dropdown" id="profileDropdown">
-                        <a href="../userProfile.html" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
+                        <a href="userProfile.php" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="../login.html" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
@@ -81,14 +81,14 @@
                 <!-- Page Header -->
                 <div class="welcome-card" style="min-height: 150px;">
                     <div class="welcome-text">
-                        <h2>Settings</h2>
-                        <p>Manage settings here.</p>
+                        <h2>Projects DB</h2>
+                        <p>Manage projects db here.</p>
                     </div>
                 </div>
 
                 <div style="text-align:center; padding: 4rem; color: var(--text-muted);">
-                    <i class="ri-settings-3-line" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
-                    <h3>Settings Module</h3>
+                    <i class="ri-node-tree" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+                    <h3>Projects DB Module</h3>
                     <p>This page has been created and linked.</p>
                 </div>
             </div>

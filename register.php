@@ -75,11 +75,11 @@
     <!-- Navbar (Simple) -->
     <nav class="navbar" style="position: relative;">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
+            <a href="index.php" class="logo">
                 <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                 SPARK <span>'26</span>
             </a>
-            <a href="index.html" class="btn-outline">Back to Home</a>
+            <a href="index.php" class="btn-outline">Back to Home</a>
         </div>
     </nav>
 
@@ -90,7 +90,7 @@
                 <h2>Create Account</h2>
                 <p style="color: var(--text-muted);">Register your team or join as a viewer</p>
             </div>
-            <form action="login.html">
+            <form action="login.php">
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">First Name</label>
@@ -126,7 +126,7 @@
                 <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">Create Account</button>
             </form>
             <div class="auth-footer">
-                Already have an account? <a href="login.html">Login</a>
+                Already have an account? <a href="login.php">Login</a>
             </div>
         </div>
     </div>
