@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard | SPARK'26</title>
+    <title>Resources | SPARK'26</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
@@ -84,10 +84,10 @@
                 </a>
             </div>
             <div class="sidebar-menu">
-                <a href="studentDashboard.html" class="menu-item active"><i class="ri-home-line"></i> Home</a>
+                <a href="studentDashboard.html" class="menu-item"><i class="ri-home-line"></i> Home</a>
                 <a href="studentProjects.html" class="menu-item"><i class="ri-stack-line"></i> My Projects</a>
                 <a href="studentMessages.html" class="menu-item"><i class="ri-mail-line"></i> Messages</a>
-                <a href="studentResources.html" class="menu-item"><i class="ri-book-open-line"></i> Resources</a>
+                <a href="studentResources.html" class="menu-item active"><i class="ri-book-open-line"></i> Resources</a>
             </div>
             <div style="padding: 1.5rem;">
                 <a href="login.html" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
@@ -119,70 +119,19 @@
 
             <!-- Dashboard Content -->
             <div class="d-content">
-                
-                <!-- Welcome Card -->
-                <div class="welcome-card">
+                <!-- Page Header -->
+                <div class="welcome-card" style="min-height: 150px;">
                     <div class="welcome-text">
-                        <h2>Hello, Alex! 👋</h2>
-                        <p>You have 1 project pending review. Check the feedback from your advisor.</p>
-                    </div>
-                    <div class="welcome-decoration">
-                        <i class="ri-lightbulb-line"></i>
+                        <h2>Resources</h2>
+                        <p>Manage resources here.</p>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h3 class="section-title" style="margin:0; font-size:1.5rem;">My Projects</h3>
-                    <button class="btn-primary">+ New Project</button>
+                <div style="text-align:center; padding: 4rem; color: var(--text-muted);">
+                    <i class="ri-book-open-line" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+                    <h3>Resources Module</h3>
+                    <p>This page has been created and linked.</p>
                 </div>
-        
-                <div class="dashboard-grid">
-                    <!-- Project Card 1 -->
-                    <div class="dash-card">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                            <span class="status-badge status-pending">Pending Review</span>
-                            <i class="ri-ellipsis-h-line" style="color: var(--text-muted); cursor: pointer;"></i>
-                        </div>
-                        <h3 class="proj-title">AI-Driven Traffic Control</h3>
-                        <p class="proj-meta">Submitted on Feb 2, 2026</p>
-                        <p style="margin-bottom: 1.5rem; font-size: 0.95rem;">
-                            An adaptive traffic light control system using computer vision to optimize traffic flow in real-time.
-                        </p>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn-outline" style="width: 100%; font-size: 0.9rem;">View Details</button>
-                            <button class="btn-outline" style="width: 100%; font-size: 0.9rem;">Edit</button>
-                        </div>
-                    </div>
-
-                    <!-- Timeline / Status -->
-                    <div class="dash-card">
-                        <h4 style="margin-bottom: 1.5rem;">Submission Timeline</h4>
-                        <div class="timeline" style="margin:0; max-width: none;">
-                            <div class="timeline-item">
-                                <div class="t-marker done" style="position:relative; width: 24px; height: 24px; top:0; left:0; border: none; font-size: 0.8rem;">✓</div>
-                                <div>
-                                    <div style="font-weight: 600;">Project Registered</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Feb 2, 2026</div>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="t-marker" style="position:relative; width: 24px; height: 24px; top:0; left:0; border: 2px solid var(--accent); color: var(--accent); background:white; display: flex; align-items: center; justify-content: center; font-size:1.2rem;">•</div>
-                                <div>
-                                    <div style="font-weight: 600;">Advisor Approval</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Pending</div>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="t-marker" style="position:relative; width: 24px; height: 24px; top:0; left:0; border: 2px solid var(--border); background:white;"></div>
-                                <div>
-                                    <div style="font-weight: 600;">HOD Verification</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted);">waiting...</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </main>
     </div>

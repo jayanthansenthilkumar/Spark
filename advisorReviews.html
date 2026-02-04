@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advisor Dashboard | SPARK'26</title>
+    <title>Project Reviews | SPARK'26</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
@@ -61,9 +61,9 @@
                 </a>
             </div>
             <div class="sidebar-menu">
-                <a href="classAdvisor.html" class="menu-item active"><i class="ri-grid-line"></i> Overview</a>
+                <a href="classAdvisor.html" class="menu-item"><i class="ri-grid-line"></i> Overview</a>
                 <a href="advisorClassList.html" class="menu-item"><i class="ri-list-check"></i> Class List</a>
-                <a href="advisorReviews.html" class="menu-item"><i class="ri-clipboard-line"></i> Project Reviews</a>
+                <a href="advisorReviews.html" class="menu-item active"><i class="ri-clipboard-line"></i> Project Reviews</a>
                 <a href="advisorReports.html" class="menu-item"><i class="ri-bar-chart-line"></i> Reports</a>
             </div>
             <div style="padding: 1.5rem;">
@@ -96,82 +96,19 @@
 
             <!-- Dashboard Content -->
             <div class="d-content">
-                
-                <!-- Welcome Card -->
-                <div class="welcome-card">
+                <!-- Page Header -->
+                <div class="welcome-card" style="min-height: 150px;">
                     <div class="welcome-text">
-                        <h2>Welcome back, Professor! 🎓</h2>
-                        <p>You have 5 projects pending your review for CSE Section A.</p>
-                    </div>
-                    <div class="welcome-decoration">
-                        <i class="ri-presentation-line"></i>
+                        <h2>Project Reviews</h2>
+                        <p>Manage project reviews here.</p>
                     </div>
                 </div>
 
-                <!-- Stats -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                    <div class="stat-card">
-                        <div class="stat-val">42</div>
-                        <div class="stat-label">Total Students</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-val">12</div>
-                        <div class="stat-label">Projects</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-val" style="color: #f59e0b;">5</div>
-                        <div class="stat-label">Pending</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-val" style="color: #10b981;">7</div>
-                        <div class="stat-label">Approved</div>
-                    </div>
+                <div style="text-align:center; padding: 4rem; color: var(--text-muted);">
+                    <i class="ri-clipboard-line" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+                    <h3>Project Reviews Module</h3>
+                    <p>This page has been created and linked.</p>
                 </div>
-
-                <!-- Project List -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 class="section-title" style="margin:0; font-size:1.5rem;">Pending Approvals</h3>
-                    <button class="btn-outline">Download Report</button>
-                </div>
-                
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Project Title</th>
-                                <th>Team Lead</th>
-                                <th>Submission Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="font-weight: 600;">Smart Campus Navigation</td>
-                                <td>Rahul Verma</td>
-                                <td>Feb 4, 2026</td>
-                                <td><span class="status-badge st-pending">Pending</span></td>
-                                <td><a href="approveProject.html" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Review</a></td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: 600;">Blockchain E-Voting</td>
-                                <td>Sarah Jones</td>
-                                <td>Feb 3, 2026</td>
-                                <td><span class="status-badge st-pending">Pending</span></td>
-                                <td><a href="approveProject.html" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Review</a></td>
-                            </tr>
-                            <!-- Already Approved examples for context -->
-                            <tr style="opacity: 0.7;">
-                                <td style="font-weight: 600;">Automated Attendance</td>
-                                <td>Mike Chen</td>
-                                <td>Feb 1, 2026</td>
-                                <td><span class="status-badge st-approved">Approved</span></td>
-                                <td><button class="btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" disabled>View</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
             </div>
         </main>
     </div>
