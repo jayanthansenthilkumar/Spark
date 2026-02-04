@@ -4,44 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dept Reports | SPARK'26</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Users | SPARK'26</title>
+    <link rel="stylesheet" href="../style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
-        /* Specific Styles for HOD Cards (Can be moved to style.css if needed globally) */
-        .approval-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
         }
-        .project-card {
+        
+        .data-card {
             background: white;
-            padding: 1.5rem;
-            border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
-        .pc-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .pc-advisor-status {
-            font-size: 0.8rem;
-            color: #15803d;
-            background: #f0fdf4;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-        }
-        .pc-actions {
-            margin-top: auto;
-            padding-top: 1rem;
-            display: flex;
+        
+        .form-row-compact {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
             gap: 1rem;
+            align-items: end;
         }
     </style>
 </head>
@@ -52,19 +36,20 @@
         <!-- Sidebar -->
         <aside class="d-sidebar">
             <div class="sidebar-header">
-                <a href="index.html" class="logo">
+                <a href="../index.html" class="logo">
                     <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                     SPARK <span>'26</span>
                 </a>
             </div>
             <div class="sidebar-menu">
-                <a href="hodDepartment.html" class="menu-item"><i class="ri-pie-chart-line"></i> Overview</a>
-                <a href="hodFaculty.html" class="menu-item"><i class="ri-user-settings-line"></i> Faculty</a>
-                <a href="hodProjects.html" class="menu-item"><i class="ri-node-tree"></i> All Projects</a>
-                <a href="hodReports.html" class="menu-item active"><i class="ri-file-list-3-line"></i> Dept Reports</a>
+                <a href="projectAdmin.html" class="menu-item"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="adminUsers.html" class="menu-item active"><i class="ri-group-line"></i> Users</a>
+                <a href="adminProjectsDB.html" class="menu-item"><i class="ri-node-tree"></i> Projects DB</a>
+                <a href="adminDepartments.html" class="menu-item"><i class="ri-building-line"></i> Departments</a>
+                <a href="adminSettings.html" class="menu-item"><i class="ri-settings-3-line"></i> Settings</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="login.html" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="../login.html" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
             </div>
         </aside>
 
@@ -74,19 +59,19 @@
             <header class="d-header">
                 <div class="header-search">
                     <i class="ri-search-line"></i>
-                    <input type="text" placeholder="Search department data...">
+                    <input type="text" placeholder="Search system logs, users...">
                 </div>
                 <!-- Profile -->
                 <div class="header-profile" onclick="toggleDropdown()">
                     <div class="user-info">
-                        <span class="user-name">Dr. Alan Turing</span>
-                        <span class="user-role">HOD - CSE</span>
+                        <span class="user-name">SysAdmin</span>
+                        <span class="user-role">Administrator</span>
                     </div>
-                    <div class="user-avatar">AT</div>
+                    <div class="user-avatar" style="background:#475569;">SA</div>
                     <div class="profile-dropdown" id="profileDropdown">
-                        <a href="userProfile.html" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
+                        <a href="../userProfile.html" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="login.html" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="../login.html" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
@@ -96,14 +81,14 @@
                 <!-- Page Header -->
                 <div class="welcome-card" style="min-height: 150px;">
                     <div class="welcome-text">
-                        <h2>Dept Reports</h2>
-                        <p>Manage dept reports here.</p>
+                        <h2>Users</h2>
+                        <p>Manage users here.</p>
                     </div>
                 </div>
 
                 <div style="text-align:center; padding: 4rem; color: var(--text-muted);">
-                    <i class="ri-file-list-3-line" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
-                    <h3>Dept Reports Module</h3>
+                    <i class="ri-group-line" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+                    <h3>Users Module</h3>
                     <p>This page has been created and linked.</p>
                 </div>
             </div>
