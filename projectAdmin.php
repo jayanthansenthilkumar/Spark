@@ -7,27 +7,7 @@
     <title>Project Admin | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        .admin-layout {
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        .data-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-row-compact {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 1rem;
-            align-items: end;
-        }
-    </style>
+
 </head>
 
 <body>
@@ -49,7 +29,8 @@
                 <a href="adminSettings.php" class="menu-item"><i class="ri-settings-3-line"></i> Settings</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i>
+                    Logout</a>
             </div>
         </aside>
 
@@ -71,41 +52,52 @@
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="userProfile.php" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i
+                                class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
 
             <!-- Dashboard Content -->
             <div class="d-content">
-                
+
                 <!-- Welcome Card -->
                 <div class="welcome-card">
                     <div class="welcome-text">
                         <h2>System Overview</h2>
                         <p>Last automated backup: 2 hours ago • <span style="color:#10b981;">● System Healthy</span></p>
                     </div>
-                     <div class="welcome-decoration">
+                    <div class="welcome-decoration">
                         <i class="ri-server-line"></i>
                     </div>
                 </div>
 
                 <!-- Admin specific content -->
-                 <!-- Configuration / Manage Departments -->
+                <!-- Configuration / Manage Departments -->
                 <div class="data-card">
                     <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Add Department / Track</h3>
                     <div class="form-row-compact">
                         <div>
-                            <label style="display:block; margin-bottom:0.3rem; font-size: 0.85rem; font-weight:600;">Department Name</label>
-                            <input type="text" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px;" placeholder="e.g. Robotics Engineering">
+                            <label
+                                style="display:block; margin-bottom:0.3rem; font-size: 0.85rem; font-weight:600;">Department
+                                Name</label>
+                            <input type="text"
+                                style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px;"
+                                placeholder="e.g. Robotics Engineering">
                         </div>
                         <div>
-                            <label style="display:block; margin-bottom:0.3rem; font-size: 0.85rem; font-weight:600;">Code</label>
-                            <input type="text" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px;" placeholder="RBE">
+                            <label
+                                style="display:block; margin-bottom:0.3rem; font-size: 0.85rem; font-weight:600;">Code</label>
+                            <input type="text"
+                                style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px;"
+                                placeholder="RBE">
                         </div>
                         <div>
-                            <label style="display:block; margin-bottom:0.3rem; font-size: 0.85rem; font-weight:600;">HOD Email</label>
-                            <input type="text" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px;" placeholder="hod.rbe@college.edu">
+                            <label style="display:block; margin-bottom:0.3rem; font-size: 0.85rem; font-weight:600;">HOD
+                                Email</label>
+                            <input type="text"
+                                style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px;"
+                                placeholder="hod.rbe@college.edu">
                         </div>
                         <button class="btn-primary" style="padding: 0.5rem 1rem;">Add</button>
                     </div>
@@ -113,13 +105,16 @@
 
                 <!-- User Management Table -->
                 <div class="data-card" style="padding: 0; overflow: hidden; margin-top: 1.5rem;">
-                    <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+                    <div
+                        style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
                         <h3 style="font-size: 1rem; margin: 0;">Recent Users</h3>
-                        <input type="text" placeholder="Search users..." style="padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 4px;">
+                        <input type="text" placeholder="Search users..."
+                            style="padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 4px;">
                     </div>
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
-                            <tr style="text-align: left; background: var(--bg-surface); color: var(--text-muted); font-size: 0.85rem;">
+                            <tr
+                                style="text-align: left; background: var(--bg-surface); color: var(--text-muted); font-size: 0.85rem;">
                                 <th style="padding: 0.75rem 1.5rem; font-weight: 600;">User</th>
                                 <th style="padding: 0.75rem 1.5rem; font-weight: 600;">Role</th>
                                 <th style="padding: 0.75rem 1.5rem; font-weight: 600;">Status</th>
@@ -134,7 +129,8 @@
                                 </td>
                                 <td style="padding: 0.75rem 1.5rem;">Student</td>
                                 <td style="padding: 0.75rem 1.5rem;"><span style="color: #15803d;">Active</span></td>
-                                <td style="padding: 0.75rem 1.5rem;"><a href="#" style="color: var(--primary);">Edit</a></td>
+                                <td style="padding: 0.75rem 1.5rem;"><a href="#" style="color: var(--primary);">Edit</a>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 0.75rem 1.5rem;">
@@ -143,7 +139,8 @@
                                 </td>
                                 <td style="padding: 0.75rem 1.5rem;">Class Advisor</td>
                                 <td style="padding: 0.75rem 1.5rem;"><span style="color: #15803d;">Active</span></td>
-                                <td style="padding: 0.75rem 1.5rem;"><a href="#" style="color: var(--primary);">Edit</a></td>
+                                <td style="padding: 0.75rem 1.5rem;"><a href="#" style="color: var(--primary);">Edit</a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -157,7 +154,7 @@
         function toggleDropdown() {
             document.getElementById('profileDropdown').classList.toggle('show');
         }
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (!event.target.closest('.header-profile')) {
                 var dropdowns = document.getElementsByClassName("profile-dropdown");
                 for (var i = 0; i < dropdowns.length; i++) {
@@ -170,4 +167,5 @@
         }
     </script>
 </body>
+
 </html>

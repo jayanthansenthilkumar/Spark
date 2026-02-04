@@ -7,67 +7,7 @@
     <title>Register | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        .auth-container {
-            min-height: 80vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem 2rem;
-            background: linear-gradient(135deg, var(--bg-surface) 0%, white 100%);
-        }
-        .auth-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            width: 100%;
-            max-width: 550px;
-            border: 1px solid var(--border);
-        }
-        .auth-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-        .form-input, .form-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            font-family: inherit;
-            transition: all 0.2s;
-            background: white;
-        }
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        .auth-footer {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        .auth-footer a {
-            color: var(--primary);
-            font-weight: 600;
-        }
-    </style>
+
 </head>
 
 <body>
@@ -122,8 +62,9 @@
                     <label class="form-label">Password</label>
                     <input type="password" class="form-input" placeholder="Create a password" required>
                 </div>
-                
-                <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">Create Account</button>
+
+                <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">Create
+                    Account</button>
             </form>
             <div class="auth-footer">
                 Already have an account? <a href="login.php">Login</a>
@@ -141,4 +82,5 @@
     </footer>
 
 </body>
+
 </html>

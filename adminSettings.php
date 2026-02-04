@@ -7,27 +7,7 @@
     <title>Settings | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        .admin-layout {
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        .data-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-row-compact {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 1rem;
-            align-items: end;
-        }
-    </style>
+
 </head>
 
 <body>
@@ -49,7 +29,8 @@
                 <a href="adminSettings.php" class="menu-item active"><i class="ri-settings-3-line"></i> Settings</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i>
+                    Logout</a>
             </div>
         </aside>
 
@@ -71,7 +52,8 @@
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="userProfile.php" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i
+                                class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
@@ -99,7 +81,7 @@
         function toggleDropdown() {
             document.getElementById('profileDropdown').classList.toggle('show');
         }
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (!event.target.closest('.header-profile')) {
                 var dropdowns = document.getElementsByClassName("profile-dropdown");
                 for (var i = 0; i < dropdowns.length; i++) {
@@ -112,4 +94,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -7,46 +7,7 @@
     <title>Class List | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        .dashboard-header {
-            padding-top: 6rem;
-            padding-bottom: 2rem;
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--border);
-        }
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-        .stat-val { font-size: 2rem; font-weight: 800; color: var(--primary); }
-        .stat-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
 
-        .table-container {
-            background: white;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            margin-top: 2rem;
-        }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: var(--bg-surface); font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background: var(--bg-surface); }
-        
-        .status-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .st-pending { background: #fff7ed; color: #c2410c; }
-        .st-approved { background: #f0fdf4; color: #15803d; }
-    </style>
 </head>
 
 <body>
@@ -67,7 +28,8 @@
                 <a href="advisorReports.php" class="menu-item"><i class="ri-bar-chart-line"></i> Reports</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i>
+                    Logout</a>
             </div>
         </aside>
 
@@ -89,7 +51,8 @@
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="userProfile.php" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i
+                                class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
@@ -117,7 +80,7 @@
         function toggleDropdown() {
             document.getElementById('profileDropdown').classList.toggle('show');
         }
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (!event.target.closest('.header-profile')) {
                 var dropdowns = document.getElementsByClassName("profile-dropdown");
                 for (var i = 0; i < dropdowns.length; i++) {
@@ -130,4 +93,5 @@
         }
     </script>
 </body>
+
 </html>

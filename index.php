@@ -11,7 +11,6 @@
 </head>
 
 <body>
-
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container nav-container">

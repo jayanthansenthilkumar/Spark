@@ -7,61 +7,7 @@
     <title>Login | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        .auth-container {
-            min-height: 80vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            background: linear-gradient(135deg, var(--bg-surface) 0%, white 100%);
-        }
-        .auth-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            width: 100%;
-            max-width: 450px;
-            border: 1px solid var(--border);
-        }
-        .auth-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        .auth-footer {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        .auth-footer a {
-            color: var(--primary);
-            font-weight: 600;
-        }
-    </style>
+
 </head>
 
 <body>
@@ -99,7 +45,8 @@
                     </label>
                     <a href="#" style="color: var(--primary);">Forgot Password?</a>
                 </div>
-                <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">Login</button>
+                <button type="submit" class="btn-primary"
+                    style="width: 100%; border: none; cursor: pointer;">Login</button>
             </form>
             <div class="auth-footer">
                 Don't have an account? <a href="register.php">Register here</a>
@@ -117,4 +64,5 @@
     </footer>
 
 </body>
+
 </html>

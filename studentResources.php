@@ -7,69 +7,7 @@
     <title>Resources | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        .dashboard-header {
-            padding-top: 6rem; /* Account for fixed nav */
-            padding-bottom: 2rem;
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--border);
-        }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        .dash-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .status-pending { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
-        .status-approved { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
-        .proj-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .proj-meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
-        
-        .timeline-item {
-            display: flex;
-            gap: 1rem;
-            padding-bottom: 1.5rem;
-            position: relative;
-        }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: 15px;
-            top: 25px;
-            bottom: 0;
-            width: 2px;
-            background: var(--border);
-        }
-        .timeline-item:last-child::before { display: none; }
-        .t-marker {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--bg-surface);
-            border: 2px solid var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            flex-shrink: 0;
-            z-index: 1;
-        }
-        .t-marker.done { background: var(--primary); color: white; }
-    </style>
+
 </head>
 
 <body>
@@ -90,7 +28,8 @@
                 <a href="studentResources.php" class="menu-item active"><i class="ri-book-open-line"></i> Resources</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i>
+                    Logout</a>
             </div>
         </aside>
 
@@ -112,7 +51,8 @@
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="userProfile.php" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i
+                                class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
@@ -140,7 +80,7 @@
         function toggleDropdown() {
             document.getElementById('profileDropdown').classList.toggle('show');
         }
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (!event.target.closest('.header-profile')) {
                 var dropdowns = document.getElementsByClassName("profile-dropdown");
                 for (var i = 0; i < dropdowns.length; i++) {
@@ -153,4 +93,5 @@
         }
     </script>
 </body>
+
 </html>

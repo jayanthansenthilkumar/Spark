@@ -7,43 +7,7 @@
     <title>Dept Reports | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        /* Specific Styles for HOD Cards (Can be moved to style.css if needed globally) */
-        .approval-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-        .project-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-        .pc-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .pc-advisor-status {
-            font-size: 0.8rem;
-            color: #15803d;
-            background: #f0fdf4;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-        }
-        .pc-actions {
-            margin-top: auto;
-            padding-top: 1rem;
-            display: flex;
-            gap: 1rem;
-        }
-    </style>
+
 </head>
 
 <body>
@@ -64,7 +28,8 @@
                 <a href="hodReports.php" class="menu-item active"><i class="ri-file-list-3-line"></i> Dept Reports</a>
             </div>
             <div style="padding: 1.5rem;">
-                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                <a href="login.php" class="menu-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i>
+                    Logout</a>
             </div>
         </aside>
 
@@ -86,7 +51,8 @@
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="userProfile.php" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        <a href="login.php" class="dropdown-item" style="color: #ef4444;"><i
+                                class="ri-logout-box-r-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
@@ -114,7 +80,7 @@
         function toggleDropdown() {
             document.getElementById('profileDropdown').classList.toggle('show');
         }
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (!event.target.closest('.header-profile')) {
                 var dropdowns = document.getElementsByClassName("profile-dropdown");
                 for (var i = 0; i < dropdowns.length; i++) {
@@ -127,4 +93,5 @@
         }
     </script>
 </body>
+
 </html>

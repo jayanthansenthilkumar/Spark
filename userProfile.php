@@ -7,87 +7,7 @@
     <title>My Profile | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        .profile-header-bg {
-            height: 200px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            margin-top: 60px; /* Nav offseet */
-        }
-        
-        .profile-card-layout {
-            max-width: 900px;
-            margin: -60px auto 4rem; /* Overlap header */
-            padding: 0 1.5rem;
-            position: relative;
-        }
 
-        .main-profile-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        
-        .avatar-lg {
-            width: 120px;
-            height: 120px;
-            background: white;
-            padding: 4px;
-            border-radius: 50%;
-            margin-top: -80px; /* Pull up */
-            margin-bottom: 1rem;
-            position: relative;
-        }
-        .avatar-lg img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--border);
-        }
-
-        .profile-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            border-bottom: 1px solid var(--border);
-            margin-top: 2rem;
-            width: 100%;
-        }
-        .p-tab {
-            padding: 1rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            font-weight: 500;
-        }
-        .p-tab.active {
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .p-content {
-            width: 100%;
-            text-align: left;
-            padding: 2rem 0;
-        }
-
-        .info-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-        }
-        @media (max-width: 600px) { .info-row { grid-template-columns: 1fr; } }
-
-        .info-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.25rem; }
-        .info-val { font-size: 1rem; color: var(--text-main); font-weight: 500; }
-    </style>
 </head>
 
 <body>
@@ -111,10 +31,11 @@
     <!-- Main Card -->
     <div class="profile-card-layout">
         <div class="main-profile-card">
-            
+
             <div class="avatar-lg">
                 <!-- Placeholder for user avatar -->
-                <div style="width:100%; height:100%; border-radius:50%; background:#e2e8f0; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#64748b;">
+                <div
+                    style="width:100%; height:100%; border-radius:50%; background:#e2e8f0; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#64748b;">
                     <i class="ri-user-line"></i>
                 </div>
             </div>
@@ -134,7 +55,7 @@
             <!-- Content -->
             <div class="p-content">
                 <h3 style="margin-bottom: 1.5rem;">Personal Information</h3>
-                
+
                 <div class="info-row">
                     <div>
                         <div class="info-label">Email Address</div>
@@ -145,7 +66,7 @@
                         <div class="info-val">+1 (555) 123-4567</div>
                     </div>
                 </div>
-                
+
                 <div class="info-row">
                     <div>
                         <div class="info-label">Student ID</div>
@@ -160,10 +81,12 @@
                 <div style="margin-top: 2rem;">
                     <h3 style="margin-bottom: 1.5rem;">Badges & Achievements</h3>
                     <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                        <span style="padding: 0.5rem 1rem; background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+                        <span
+                            style="padding: 0.5rem 1rem; background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
                             🏆 Hackathon Winner 2025
                         </span>
-                        <span style="padding: 0.5rem 1rem; background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+                        <span
+                            style="padding: 0.5rem 1rem; background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
                             ✨ Early Bird
                         </span>
                     </div>
@@ -184,4 +107,5 @@
     </footer>
 
 </body>
+
 </html>
