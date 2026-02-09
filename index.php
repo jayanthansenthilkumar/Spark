@@ -1,3 +1,32 @@
+<?php
+require_once 'auth.php';
+require_once 'db.php';
+
+// Check access for public page (starts session, checks timeout, etc.)
+checkUserAccess(true);
+
+$isLoggedIn = isset($_SESSION['user_id']);
+$dashboardLink = 'login.php';
+
+if ($isLoggedIn) {
+    switch ($_SESSION['role']) {
+        case 'student':
+            $dashboardLink = 'studentDashboard.php';
+            break;
+        case 'studentaffairs':
+            $dashboardLink = 'studentAffairs.php';
+            break;
+        case 'departmentcoordinator':
+            $dashboardLink = 'departmentCoordinator.php';
+            break;
+        case 'admin':
+            $dashboardLink = 'sparkAdmin.php';
+            break;
+        default:
+            $dashboardLink = 'login.php';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,9 +51,18 @@
                 <a href="#about" class="nav-link">About</a>
                 <a href="#tracks" class="nav-link">Tracks</a>
                 <a href="#schedule" class="nav-link">Schedule</a>
-                <a href="login.php" class="nav-link">Login</a>
+                <?php if ($isLoggedIn): ?>
+                    <a href="<?php echo $dashboardLink; ?>" class="nav-link">Dashboard</a>
+                    <a href="logout.php" class="nav-link" style="color: var(--primary);">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" class="nav-link">Login</a>
+                <?php endif; ?>
             </div>
-            <a href="register.php" class="btn-primary">Register Now</a>
+            <?php if (!$isLoggedIn): ?>
+                <a href="register.php" class="btn-primary">Register Now</a>
+            <?php else: ?>
+                <a href="<?php echo $dashboardLink; ?>" class="btn-primary">Go to Console</a>
+            <?php endif; ?>
         </div>
     </nav>
 
@@ -39,18 +77,27 @@
                     Showcase your final year project or first year prototype to industry leaders.
                 </p>
                 <div class="hero-actions">
-                    <a href="register.php" class="btn-primary">Submit Project</a>
+                    <?php if (!$isLoggedIn): ?>
+                        <a href="register.php" class="btn-primary">Submit Project</a>
+                    <?php else: ?>
+                        <a href="<?php echo $dashboardLink; ?>" class="btn-primary">Manage Projects</a>
+                    <?php endif; ?>
                     <a href="#about" class="btn-outline">View Guidelines</a>
                 </div>
             </div>
             <div class="hero-visual">
                 <div class="shape-blob"></div>
                 <div class="hero-img-card">
-                    <div style="position: relative; border-radius: 12px; overflow: hidden; height: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                        <img src="https://images.unsplash.com/photo-1527977966376-1c8408f9f108?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Innovation Project" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 2rem 1.5rem 1rem; color: white;">
-                             <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 0.25rem;">Featured Innovation</div>
-                             <div style="font-weight: 700; font-size: 1.2rem;">Autonomous Agri-Drone</div>
+                    <div
+                        style="position: relative; border-radius: 12px; overflow: hidden; height: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        <img src="https://images.unsplash.com/photo-1527977966376-1c8408f9f108?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                            alt="Innovation Project" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div
+                            style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 2rem 1.5rem 1rem; color: white;">
+                            <div
+                                style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 0.25rem;">
+                                Featured Innovation</div>
+                            <div style="font-weight: 700; font-size: 1.2rem;">Autonomous Agri-Drone</div>
                         </div>
                     </div>
                 </div>
@@ -115,9 +162,10 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Choose Your Domain</h2>
-                <p style="color: var(--text-muted); margin-top: 1rem; font-size: 1.1rem;">Solutions can involve Hardware, Software or a combination of both.</p>
+                <p style="color: var(--text-muted); margin-top: 1rem; font-size: 1.1rem;">Solutions can involve
+                    Hardware, Software or a combination of both.</p>
             </div>
-            
+
             <div class="track-container-accordion">
                 <!-- Panel 1 -->
                 <div class="track-panel tp-1 active">

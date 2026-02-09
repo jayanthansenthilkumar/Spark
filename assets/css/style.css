@@ -1041,6 +1041,21 @@ ul {
      position: sticky;
      top: 2rem;
    }
+
+   .btn-back-home {
+     display: inline-flex;
+     align-items: center;
+     gap: 0.5rem;
+     font-weight: 600;
+     margin-bottom: 2rem;
+     color: var(--text-muted);
+     transition: color 0.2s;
+     font-size: 0.9rem;
+   }
+
+   .btn-back-home:hover {
+     color: var(--primary);
+   }
    
    .auth-info-side h1 {
      font-size: 4rem;
@@ -1069,27 +1084,44 @@ ul {
    }
    
    @media (max-width: 900px) {
+     .auth-container {
+       height: auto;
+       min-height: 100vh;
+       overflow-y: auto;
+       padding: 6rem 1.5rem 3rem;
+       align-items: flex-start;
+     }
+
      .auth-grid-split {
        grid-template-columns: 1fr;
        text-align: center;
-       gap: 3rem;
+       gap: 2rem;
+       margin: 2rem 0;
      }
      
      .auth-info-side {
        padding-right: 0;
+       position: static;
+       margin-bottom: 1rem;
      }
      
      .auth-info-side h1 {
-       font-size: 3.5rem;
+       font-size: 3rem;
      }
      
      .auth-info-side p {
        margin: 0 auto;
-       font-size: 1.2rem;
+       font-size: 1.1rem;
      }
      
      .auth-form-side {
        justify-content: center;
+       width: 100%;
+     }
+
+     .auth-card {
+       width: 100%;
+       max-width: 100%;
      }
    }
    

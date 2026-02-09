@@ -1,57 +1,55 @@
 <?php
 session_start();
 require_once 'db.php';
+require_once 'auth.php';
+
+// Check if already logged in
+if (isset($_SESSION['user_id'])) {
+    $role = $_SESSION['role'];
+    $redirectUrl = 'studentDashboard.php'; // Default
+    switch ($role) {
+        case 'student':
+            $redirectUrl = 'studentDashboard.php';
+            break;
+        case 'studentaffairs':
+            $redirectUrl = 'studentAffairs.php';
+            break;
+        case 'departmentcoordinator':
+            $redirectUrl = 'departmentCoordinator.php';
+            break;
+        case 'admin':
+            $redirectUrl = 'sparkAdmin.php';
+            break;
+    }
+    header("Location: $redirectUrl");
+    exit();
+}
 
 $error = '';
+$success = false;
+$redirectUrl = '';
+$userName = ''; // For welcome message
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
+if (isset($_SESSION['error'])) {
+    $error = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
 
-    if (empty($username) || empty($password)) {
-        $error = 'Please enter both username and password';
-    } else {
-        $query = "SELECT * FROM users WHERE username = ? AND password = ?";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "ss", $username, $password);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        $user = mysqli_fetch_assoc($result);
+if (isset($_SESSION['success'])) {
+    $success = true;
+    $userName = isset($_SESSION['name']) ? $_SESSION['name'] : '';
+    // Typically the success message itself is stored in $_SESSION['success'] as a string,
+    // but the original code used $success = true boolean and pulled name from $user array.
+    // The sparkBackend sets $_SESSION['success'] string and $_SESSION['redirect_url'].
+    // We need to adapt.
 
-        if ($user) {
-            // Set session variables
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['name'] = $user['name'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['department'] = $user['department'];
+    // sparkBackend.php logic: $_SESSION['success'] = "Welcome back..."; $_SESSION['redirect_url'] = "...";
+    // We should use those.
+    $successMsg = $_SESSION['success']; // String
+    $redirectUrl = $_SESSION['redirect_url'];
 
-            // Role-based redirection
-            $redirectUrl = '';
-            switch ($user['role']) {
-                case 'student':
-                    $redirectUrl = 'studentDashboard.php';
-                    break;
-                case 'studentaffairs':
-                    $redirectUrl = 'studentAffairs.php';
-                    break;
-                case 'departmentcoordinator':
-                    $redirectUrl = 'departmentCoordinator.php';
-                    break;
-                case 'admin':
-                    $redirectUrl = 'sparkAdmin.php';
-                    break;
-                default:
-                    $redirectUrl = 'studentDashboard.php';
-            }
-
-            // Store redirect URL for JavaScript
-            $success = true;
-        } else {
-            $error = 'Invalid username or password';
-        }
-        mysqli_stmt_close($stmt);
-    }
+    unset($_SESSION['success']);
+    unset($_SESSION['redirect_url']);
 }
 ?>
 <!DOCTYPE html>
@@ -71,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="auth-container">
         <div class="auth-grid-split">
             <div class="auth-info-side">
+                <a href="index.php" class="btn-back-home"><i class="ri-arrow-left-line"></i> Back to Home</a>
                 <h1>SPARK <span>'26</span></h1>
                 <p>Login to Access Your Dashboard</p>
             </div>
@@ -81,18 +80,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p>Login to SPARK'26 Dashboard</p>
                     </div>
 
-                    <form id="loginForm" method="POST" action="">
+                    <form id="loginForm" method="POST" action="sparkBackend.php">
                         <div class="form-group">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" id="username" name="username" class="form-input" placeholder="Enter your username" required>
+                            <input type="text" id="username" name="username" class="form-input"
+                                placeholder="Enter your username" required>
                         </div>
 
                         <div class="form-group">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+                            <input type="password" id="password" name="password" class="form-input"
+                                placeholder="Enter your password" required>
                         </div>
 
-                        <button type="submit" class="btn-submit">
+                        <button type="submit" name="login" class="btn-submit">
                             <i class="ri-login-box-line"></i> Login
                         </button>
                     </form>
@@ -108,27 +109,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         // Show error message
         <?php if ($error): ?>
-        Swal.fire({
-            icon: 'error',
-            title: 'Login Failed',
-            text: '<?php echo addslashes($error); ?>',
-            confirmButtonColor: '#2563eb'
-        });
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: '<?php echo addslashes($error); ?>',
+                confirmButtonColor: '#2563eb'
+            });
         <?php endif; ?>
 
         // Show success and redirect
         <?php if (isset($success) && $success): ?>
-        Swal.fire({
-            icon: 'success',
-            title: 'Login Successful',
-            text: 'Welcome back, <?php echo addslashes($user['name']); ?>!',
-            confirmButtonColor: '#2563eb',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false
-        }).then(() => {
-            window.location.href = '<?php echo $redirectUrl; ?>';
-        });
+            Swal.fire({
+                icon: 'success',
+                title: 'Login Successful',
+                text: '<?php echo isset($successMsg) ? addslashes($successMsg) : "Welcome back!"; ?>',
+                confirmButtonColor: '#2563eb',
+                timer: 1500,
+                timerProgressBar: true,
+                showConfirmButton: false
+            }).then(() => {
+                // Set session storage as required by auth check
+                sessionStorage.setItem('userData', JSON.stringify({
+                    loggedIn: true,
+                    username: '<?php echo isset($_SESSION['username']) ? addslashes($_SESSION['username']) : ""; ?>'
+                }));
+                window.location.href = '<?php echo $redirectUrl; ?>';
+            });
         <?php endif; ?>
     </script>
 </body>

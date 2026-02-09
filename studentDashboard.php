@@ -1,12 +1,8 @@
 <?php
-session_start();
+require_once 'auth.php';
 require_once 'db.php';
 
-// Check if user is logged in and has student role
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
-    header('Location: login.php');
-    exit;
-}
+checkUserAccess();
 
 $userName = $_SESSION['name'] ?? 'Student';
 $userInitials = strtoupper(substr($userName, 0, 2));
@@ -46,7 +42,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-add-circle-line"></i>
                     Submit Project
                 </a>
-                
+
                 <div class="menu-label">Resources</div>
                 <a href="#" class="menu-item">
                     <i class="ri-calendar-line"></i>
@@ -60,7 +56,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-notification-line"></i>
                     Announcements
                 </a>
-                
+
                 <div class="menu-label">Account</div>
                 <a href="#" class="menu-item">
                     <i class="ri-user-line"></i>
@@ -113,7 +109,8 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                 <!-- Welcome Card -->
                 <div class="welcome-card">
                     <h2>Welcome back, <?php echo htmlspecialchars(explode(' ', $userName)[0]); ?>! 👋</h2>
-                    <p>Ready to showcase your innovation? Submit your project and compete with the best minds on campus.</p>
+                    <p>Ready to showcase your innovation? Submit your project and compete with the best minds on campus.
+                    </p>
                     <a href="#" class="btn-light">Submit Project</a>
                     <div class="welcome-decoration">
                         <i class="ri-rocket-2-line"></i>
@@ -218,8 +215,10 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                             <a href="#" style="color: var(--primary); font-size: 0.9rem;">View Schedule</a>
                         </div>
                         <div class="dash-card-body">
-                            <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
-                                <div style="width: 50px; height: 50px; background: var(--bg-surface); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <div
+                                style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+                                <div
+                                    style="width: 50px; height: 50px; background: var(--bg-surface); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                                     <span style="font-size: 1.25rem; font-weight: 800; line-height: 1;">15</span>
                                     <span style="font-size: 0.7rem; color: var(--text-muted);">FEB</span>
                                 </div>

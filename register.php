@@ -1,49 +1,41 @@
 <?php
+session_start();
 require_once 'db.php';
+require_once 'auth.php';
+
+// Check if already logged in
+if (isset($_SESSION['user_id'])) {
+    $role = $_SESSION['role'];
+    $redirectUrl = 'studentDashboard.php'; // Default
+    switch ($role) {
+        case 'student':
+            $redirectUrl = 'studentDashboard.php';
+            break;
+        case 'studentaffairs':
+            $redirectUrl = 'studentAffairs.php';
+            break;
+        case 'departmentcoordinator':
+            $redirectUrl = 'departmentCoordinator.php';
+            break;
+        case 'admin':
+            $redirectUrl = 'sparkAdmin.php';
+            break;
+    }
+    header("Location: $redirectUrl");
+    exit();
+}
 
 $error = '';
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $username = trim($_POST['username'] ?? '');
-    $department = trim($_POST['department'] ?? '');
-    $year = trim($_POST['year'] ?? '');
-    $reg_no = trim($_POST['reg_no'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
+if (isset($_SESSION['error'])) {
+    $error = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
 
-    // Validation
-    if (empty($name) || empty($username) || empty($department) || empty($year) || empty($reg_no) || empty($email) || empty($password)) {
-        $error = 'All fields are required';
-    } elseif (strlen($reg_no) !== 12) {
-        $error = 'Register number must be 12 characters';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Invalid email address';
-    } else {
-        // Check if username, email or reg_no already exists
-        $checkQuery = "SELECT id FROM users WHERE username = ? OR email = ? OR reg_no = ?";
-        $stmt = mysqli_prepare($conn, $checkQuery);
-        mysqli_stmt_bind_param($stmt, "sss", $username, $email, $reg_no);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-
-        if (mysqli_fetch_assoc($result)) {
-            $error = 'Username, Email or Register Number already exists';
-        } else {
-            // Insert new user
-            $insertQuery = "INSERT INTO users (name, username, department, year, reg_no, email, password, role) VALUES (?, ?, ?, ?, ?, ?, ?, 'student')";
-            $stmt = mysqli_prepare($conn, $insertQuery);
-            mysqli_stmt_bind_param($stmt, "sssssss", $name, $username, $department, $year, $reg_no, $email, $password);
-
-            if (mysqli_stmt_execute($stmt)) {
-                $success = 'Registration successful! You can now login.';
-            } else {
-                $error = 'Registration failed. Please try again.';
-            }
-        }
-        mysqli_stmt_close($stmt);
-    }
+if (isset($_SESSION['success'])) {
+    $success = $_SESSION['success'];
+    unset($_SESSION['success']);
 }
 ?>
 <!DOCTYPE html>
@@ -63,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="auth-container">
         <div class="auth-grid-split">
             <div class="auth-info-side">
+                <a href="index.php" class="btn-back-home"><i class="ri-arrow-left-line"></i> Back to Home</a>
                 <h1>JOIN SPARK <span>'26</span></h1>
                 <p>Register to Showcase Your Innovation</p>
             </div>
@@ -73,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p>Join SPARK'26 Innovation Showcase</p>
                     </div>
 
-                    <form id="registerForm" method="POST" action="">
+                    <form id="registerForm" method="POST" action="sparkBackend.php">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="name" class="form-label">Full Name</label>
@@ -139,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 placeholder="Create a password" required>
                         </div>
 
-                        <button type="submit" class="btn-submit">
+                        <button type="submit" name="register" class="btn-submit">
                             <i class="ri-user-add-line"></i> Create Account
                         </button>
                     </form>

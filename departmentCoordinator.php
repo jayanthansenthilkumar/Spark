@@ -1,12 +1,8 @@
 <?php
-session_start();
+require_once 'auth.php';
 require_once 'db.php';
 
-// Check if user is logged in and has departmentcoordinator role
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'departmentcoordinator') {
-    header('Location: login.php');
-    exit;
-}
+checkUserAccess();
 
 $userName = $_SESSION['name'] ?? 'Department Coordinator';
 $userDepartment = $_SESSION['department'] ?? 'Department';
@@ -43,7 +39,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-bar-chart-line"></i>
                     Department Stats
                 </a>
-                
+
                 <div class="menu-label">Projects</div>
                 <a href="#" class="menu-item">
                     <i class="ri-folder-line"></i>
@@ -57,7 +53,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-star-line"></i>
                     Top Projects
                 </a>
-                
+
                 <div class="menu-label">Students</div>
                 <a href="#" class="menu-item">
                     <i class="ri-group-line"></i>
@@ -67,7 +63,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-team-line"></i>
                     Teams
                 </a>
-                
+
                 <div class="menu-label">Account</div>
                 <a href="#" class="menu-item">
                     <i class="ri-user-line"></i>

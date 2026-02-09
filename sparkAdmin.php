@@ -1,12 +1,8 @@
 <?php
-session_start();
+require_once 'auth.php';
 require_once 'db.php';
 
-// Check if user is logged in and has admin role
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
-    exit;
-}
+checkUserAccess();
 
 $userName = $_SESSION['name'] ?? 'Admin';
 $userInitials = strtoupper(substr($userName, 0, 2));
@@ -42,7 +38,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-bar-chart-box-line"></i>
                     Analytics
                 </a>
-                
+
                 <div class="menu-label">Management</div>
                 <a href="#" class="menu-item">
                     <i class="ri-folder-line"></i>
@@ -60,7 +56,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-team-line"></i>
                     Coordinators
                 </a>
-                
+
                 <div class="menu-label">Event</div>
                 <a href="#" class="menu-item">
                     <i class="ri-calendar-line"></i>
@@ -74,7 +70,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-award-line"></i>
                     Judging
                 </a>
-                
+
                 <div class="menu-label">System</div>
                 <a href="#" class="menu-item">
                     <i class="ri-settings-3-line"></i>
@@ -127,7 +123,8 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                 <!-- Welcome Card -->
                 <div class="welcome-card" style="background: linear-gradient(135deg, #1e40af, #7c3aed);">
                     <h2>Welcome, Admin! 🛡️</h2>
-                    <p>Full control over SPARK'26. Manage users, projects, departments, and event settings from here.</p>
+                    <p>Full control over SPARK'26. Manage users, projects, departments, and event settings from here.
+                    </p>
                     <a href="#" class="btn-light">System Settings</a>
                     <div class="welcome-decoration">
                         <i class="ri-shield-star-line"></i>
@@ -229,14 +226,18 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <div class="dash-card">
                         <div class="dash-card-header">
                             <h3>System Status</h3>
-                            <span style="background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">All Systems Normal</span>
+                            <span
+                                style="background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">All
+                                Systems Normal</span>
                         </div>
                         <div class="dash-card-body">
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                            <div
+                                style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
                                 <span>Database</span>
                                 <span style="color: #22c55e;">● Online</span>
                             </div>
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                            <div
+                                style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
                                 <span>File Storage</span>
                                 <span style="color: #22c55e;">● Online</span>
                             </div>

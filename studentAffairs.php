@@ -1,12 +1,8 @@
 <?php
-session_start();
+require_once 'auth.php';
 require_once 'db.php';
 
-// Check if user is logged in and has studentaffairs role
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'studentaffairs') {
-    header('Location: login.php');
-    exit;
-}
+checkUserAccess();
 
 $userName = $_SESSION['name'] ?? 'Student Affairs';
 $userInitials = strtoupper(substr($userName, 0, 2));
@@ -42,7 +38,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-bar-chart-line"></i>
                     Analytics
                 </a>
-                
+
                 <div class="menu-label">Management</div>
                 <a href="#" class="menu-item">
                     <i class="ri-folder-line"></i>
@@ -56,7 +52,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-group-line"></i>
                     Students
                 </a>
-                
+
                 <div class="menu-label">Communication</div>
                 <a href="#" class="menu-item">
                     <i class="ri-megaphone-line"></i>
@@ -66,7 +62,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <i class="ri-mail-line"></i>
                     Messages
                 </a>
-                
+
                 <div class="menu-label">Account</div>
                 <a href="#" class="menu-item">
                     <i class="ri-user-line"></i>
