@@ -38,10 +38,27 @@ function checkUserAccess($isPublic = false)
     // Adapting to existing project roles: 'admin', 'departmentcoordinator', 'studentaffairs', 'student'
     // Including index.php as valid for logged in users as well.
     $allowed_pages = [
-        'admin' => ['sparkAdmin.php', 'logout.php', 'index.php'],
-        'departmentcoordinator' => ['departmentCoordinator.php', 'logout.php', 'index.php'],
-        'studentaffairs' => ['studentAffairs.php', 'logout.php', 'index.php'],
-        'student' => ['studentDashboard.php', 'logout.php', 'index.php']
+        'admin' => [
+            'sparkAdmin.php', 'analytics.php', 'allProjects.php', 'users.php', 
+            'departments.php', 'coordinators.php', 'schedule.php', 'announcements.php', 
+            'judging.php', 'settings.php', 'database.php', 'profile.php',
+            'logout.php', 'index.php'
+        ],
+        'departmentcoordinator' => [
+            'departmentCoordinator.php', 'departmentStats.php', 'departmentProjects.php', 
+            'reviewApprove.php', 'topProjects.php', 'studentList.php', 'teams.php', 
+            'profile.php', 'settings.php', 'logout.php', 'index.php'
+        ],
+        'studentaffairs' => [
+            'studentAffairs.php', 'analytics.php', 'allProjects.php', 'approvals.php', 
+            'students.php', 'announcements.php', 'messages.php', 'profile.php', 
+            'settings.php', 'logout.php', 'index.php'
+        ],
+        'student' => [
+            'studentDashboard.php', 'myProjects.php', 'submitProject.php', 'schedule.php', 
+            'guidelines.php', 'announcements.php', 'profile.php', 'settings.php', 
+            'logout.php', 'index.php'
+        ]
     ];
 
     // Check access rights

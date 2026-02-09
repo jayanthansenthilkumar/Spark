@@ -8,76 +8,76 @@ $menus = [
     'student' => [
         'Main' => [
             ['link' => 'studentDashboard.php', 'icon' => 'ri-dashboard-line', 'text' => 'Dashboard'],
-            ['link' => '#', 'icon' => 'ri-folder-line', 'text' => 'My Projects'],
-            ['link' => '#', 'icon' => 'ri-add-circle-line', 'text' => 'Submit Project']
+            ['link' => 'myProjects.php', 'icon' => 'ri-folder-line', 'text' => 'My Projects'],
+            ['link' => 'submitProject.php', 'icon' => 'ri-add-circle-line', 'text' => 'Submit Project']
         ],
         'Resources' => [
-            ['link' => '#', 'icon' => 'ri-calendar-line', 'text' => 'Schedule'],
-            ['link' => '#', 'icon' => 'ri-file-list-line', 'text' => 'Guidelines'],
-            ['link' => '#', 'icon' => 'ri-notification-line', 'text' => 'Announcements']
+            ['link' => 'schedule.php', 'icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+            ['link' => 'guidelines.php', 'icon' => 'ri-file-list-line', 'text' => 'Guidelines'],
+            ['link' => 'announcements.php', 'icon' => 'ri-notification-line', 'text' => 'Announcements']
         ],
         'Account' => [
-            ['link' => '#', 'icon' => 'ri-user-line', 'text' => 'Profile'],
-            ['link' => '#', 'icon' => 'ri-settings-line', 'text' => 'Settings']
+            ['link' => 'profile.php', 'icon' => 'ri-user-line', 'text' => 'Profile'],
+            ['link' => 'settings.php', 'icon' => 'ri-settings-line', 'text' => 'Settings']
         ]
     ],
     'admin' => [
         'Overview' => [
             ['link' => 'sparkAdmin.php', 'icon' => 'ri-dashboard-line', 'text' => 'Dashboard'],
-            ['link' => '#', 'icon' => 'ri-bar-chart-box-line', 'text' => 'Analytics']
+            ['link' => 'analytics.php', 'icon' => 'ri-bar-chart-box-line', 'text' => 'Analytics']
         ],
         'Management' => [
-            ['link' => '#', 'icon' => 'ri-folder-line', 'text' => 'All Projects'],
-            ['link' => '#', 'icon' => 'ri-user-line', 'text' => 'Users'],
-            ['link' => '#', 'icon' => 'ri-building-line', 'text' => 'Departments'],
-            ['link' => '#', 'icon' => 'ri-team-line', 'text' => 'Coordinators']
+            ['link' => 'allProjects.php', 'icon' => 'ri-folder-line', 'text' => 'All Projects'],
+            ['link' => 'users.php', 'icon' => 'ri-user-line', 'text' => 'Users'],
+            ['link' => 'departments.php', 'icon' => 'ri-building-line', 'text' => 'Departments'],
+            ['link' => 'coordinators.php', 'icon' => 'ri-team-line', 'text' => 'Coordinators']
         ],
         'Event' => [
-            ['link' => '#', 'icon' => 'ri-calendar-line', 'text' => 'Schedule'],
-            ['link' => '#', 'icon' => 'ri-megaphone-line', 'text' => 'Announcements'],
-            ['link' => '#', 'icon' => 'ri-award-line', 'text' => 'Judging']
+            ['link' => 'schedule.php', 'icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+            ['link' => 'announcements.php', 'icon' => 'ri-megaphone-line', 'text' => 'Announcements'],
+            ['link' => 'judging.php', 'icon' => 'ri-award-line', 'text' => 'Judging']
         ],
         'System' => [
-            ['link' => '#', 'icon' => 'ri-settings-3-line', 'text' => 'Settings'],
-            ['link' => '#', 'icon' => 'ri-database-line', 'text' => 'Database']
+            ['link' => 'settings.php', 'icon' => 'ri-settings-3-line', 'text' => 'Settings'],
+            ['link' => 'database.php', 'icon' => 'ri-database-line', 'text' => 'Database']
         ]
     ],
     'studentaffairs' => [
         'Overview' => [
             ['link' => 'studentAffairs.php', 'icon' => 'ri-dashboard-line', 'text' => 'Dashboard'],
-            ['link' => '#', 'icon' => 'ri-bar-chart-line', 'text' => 'Analytics']
+            ['link' => 'analytics.php', 'icon' => 'ri-bar-chart-line', 'text' => 'Analytics']
         ],
         'Management' => [
-            ['link' => '#', 'icon' => 'ri-folder-line', 'text' => 'All Projects'],
-            ['link' => '#', 'icon' => 'ri-checkbox-circle-line', 'text' => 'Approvals'],
-            ['link' => '#', 'icon' => 'ri-group-line', 'text' => 'Students']
+            ['link' => 'allProjects.php', 'icon' => 'ri-folder-line', 'text' => 'All Projects'],
+            ['link' => 'approvals.php', 'icon' => 'ri-checkbox-circle-line', 'text' => 'Approvals'],
+            ['link' => 'students.php', 'icon' => 'ri-group-line', 'text' => 'Students']
         ],
         'Communication' => [
-            ['link' => '#', 'icon' => 'ri-megaphone-line', 'text' => 'Announcements'],
-            ['link' => '#', 'icon' => 'ri-mail-line', 'text' => 'Messages']
+            ['link' => 'announcements.php', 'icon' => 'ri-megaphone-line', 'text' => 'Announcements'],
+            ['link' => 'messages.php', 'icon' => 'ri-mail-line', 'text' => 'Messages']
         ],
         'Account' => [
-            ['link' => '#', 'icon' => 'ri-user-line', 'text' => 'Profile'],
-            ['link' => '#', 'icon' => 'ri-settings-line', 'text' => 'Settings']
+            ['link' => 'profile.php', 'icon' => 'ri-user-line', 'text' => 'Profile'],
+            ['link' => 'settings.php', 'icon' => 'ri-settings-line', 'text' => 'Settings']
         ]
     ],
     'departmentcoordinator' => [
         'Overview' => [
             ['link' => 'departmentCoordinator.php', 'icon' => 'ri-dashboard-line', 'text' => 'Dashboard'],
-            ['link' => '#', 'icon' => 'ri-bar-chart-line', 'text' => 'Department Stats']
+            ['link' => 'departmentStats.php', 'icon' => 'ri-bar-chart-line', 'text' => 'Department Stats']
         ],
         'Projects' => [
-            ['link' => '#', 'icon' => 'ri-folder-line', 'text' => 'Department Projects'],
-            ['link' => '#', 'icon' => 'ri-checkbox-circle-line', 'text' => 'Review & Approve'],
-            ['link' => '#', 'icon' => 'ri-star-line', 'text' => 'Top Projects']
+            ['link' => 'departmentProjects.php', 'icon' => 'ri-folder-line', 'text' => 'Department Projects'],
+            ['link' => 'reviewApprove.php', 'icon' => 'ri-checkbox-circle-line', 'text' => 'Review & Approve'],
+            ['link' => 'topProjects.php', 'icon' => 'ri-star-line', 'text' => 'Top Projects']
         ],
         'Students' => [
-            ['link' => '#', 'icon' => 'ri-group-line', 'text' => 'Student List'],
-            ['link' => '#', 'icon' => 'ri-team-line', 'text' => 'Teams']
+            ['link' => 'studentList.php', 'icon' => 'ri-group-line', 'text' => 'Student List'],
+            ['link' => 'teams.php', 'icon' => 'ri-team-line', 'text' => 'Teams']
         ],
         'Account' => [
-            ['link' => '#', 'icon' => 'ri-user-line', 'text' => 'Profile'],
-            ['link' => '#', 'icon' => 'ri-settings-line', 'text' => 'Settings']
+            ['link' => 'profile.php', 'icon' => 'ri-user-line', 'text' => 'Profile'],
+            ['link' => 'settings.php', 'icon' => 'ri-settings-line', 'text' => 'Settings']
         ]
     ]
 ];
@@ -95,7 +95,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <div class="sidebar-header">
         <a href="index.php" class="logo">
             <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
-            SPARK <span>'26</span>
+            SPARK<span>'26</span>
         </a>
     </div>
 

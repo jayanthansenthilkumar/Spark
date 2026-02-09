@@ -265,6 +265,53 @@ if ($isLoggedIn) {
         </div>
     </section>
 
+    <!-- Technical Startup Sponsors -->
+    <section id="sponsors" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Our Partners</span>
+                <h2 class="section-title">Technical Startup Sponsors</h2>
+            </div>
+            <div class="sponsors-grid">
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">
+                        <i class="ri-cloud-line"></i>
+                    </div>
+                    <h3>CloudNine Tech</h3>
+                    <p>Cloud Infrastructure</p>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">
+                        <i class="ri-robot-line"></i>
+                    </div>
+                    <h3>AI Nexus</h3>
+                    <p>Artificial Intelligence</p>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">
+                        <i class="ri-code-s-slash-line"></i>
+                    </div>
+                    <h3>DevStack Labs</h3>
+                    <p>Developer Tools</p>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">
+                        <i class="ri-shield-check-line"></i>
+                    </div>
+                    <h3>CyberGuard</h3>
+                    <p>Cybersecurity</p>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">
+                        <i class="ri-database-2-line"></i>
+                    </div>
+                    <h3>DataFlow Inc</h3>
+                    <p>Data Analytics</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Detailed Guidelines (New Content) -->
     <section class="section">
         <div class="container">
