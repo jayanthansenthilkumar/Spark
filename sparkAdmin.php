@@ -2,13 +2,13 @@
 session_start();
 require_once 'db.php';
 
-// Check if user is logged in and has student role
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
+// Check if user is logged in and has admin role
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit;
 }
 
-$userName = $_SESSION['name'] ?? 'Student';
+$userName = $_SESSION['name'] ?? 'Admin';
 $userInitials = strtoupper(substr($userName, 0, 2));
 ?>
 <!DOCTYPE html>
@@ -17,7 +17,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard | SPARK'26</title>
+    <title>Admin Dashboard | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
@@ -33,42 +33,56 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                 </a>
             </div>
             <nav class="sidebar-menu">
-                <div class="menu-label">Main</div>
-                <a href="studentDashboard.php" class="menu-item active">
+                <div class="menu-label">Overview</div>
+                <a href="sparkAdmin.php" class="menu-item active">
                     <i class="ri-dashboard-line"></i>
                     Dashboard
                 </a>
                 <a href="#" class="menu-item">
-                    <i class="ri-folder-line"></i>
-                    My Projects
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="ri-add-circle-line"></i>
-                    Submit Project
+                    <i class="ri-bar-chart-box-line"></i>
+                    Analytics
                 </a>
                 
-                <div class="menu-label">Resources</div>
+                <div class="menu-label">Management</div>
+                <a href="#" class="menu-item">
+                    <i class="ri-folder-line"></i>
+                    All Projects
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="ri-user-line"></i>
+                    Users
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="ri-building-line"></i>
+                    Departments
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="ri-team-line"></i>
+                    Coordinators
+                </a>
+                
+                <div class="menu-label">Event</div>
                 <a href="#" class="menu-item">
                     <i class="ri-calendar-line"></i>
                     Schedule
                 </a>
                 <a href="#" class="menu-item">
-                    <i class="ri-file-list-line"></i>
-                    Guidelines
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="ri-notification-line"></i>
+                    <i class="ri-megaphone-line"></i>
                     Announcements
                 </a>
-                
-                <div class="menu-label">Account</div>
                 <a href="#" class="menu-item">
-                    <i class="ri-user-line"></i>
-                    Profile
+                    <i class="ri-award-line"></i>
+                    Judging
+                </a>
+                
+                <div class="menu-label">System</div>
+                <a href="#" class="menu-item">
+                    <i class="ri-settings-3-line"></i>
+                    Settings
                 </a>
                 <a href="#" class="menu-item">
-                    <i class="ri-settings-line"></i>
-                    Settings
+                    <i class="ri-database-line"></i>
+                    Database
                 </a>
             </nav>
             <div class="sidebar-footer">
@@ -87,22 +101,22 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                     <button class="mobile-toggle" onclick="toggleSidebar()">
                         <i class="ri-menu-line"></i>
                     </button>
-                    <h1>Dashboard</h1>
+                    <h1>Admin Dashboard</h1>
                 </div>
                 <div class="header-right">
                     <div class="header-search">
                         <i class="ri-search-line"></i>
-                        <input type="text" placeholder="Search...">
+                        <input type="text" placeholder="Search anything...">
                     </div>
                     <div class="header-icon">
                         <i class="ri-notification-3-line"></i>
                         <span class="badge"></span>
                     </div>
                     <div class="user-profile">
-                        <div class="user-avatar"><?php echo $userInitials; ?></div>
+                        <div class="user-avatar" style="background: #ef4444;"><?php echo $userInitials; ?></div>
                         <div class="user-info">
                             <span class="user-name"><?php echo htmlspecialchars($userName); ?></span>
-                            <span class="user-role">Student</span>
+                            <span class="user-role">Administrator</span>
                         </div>
                     </div>
                 </div>
@@ -111,12 +125,12 @@ $userInitials = strtoupper(substr($userName, 0, 2));
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <!-- Welcome Card -->
-                <div class="welcome-card">
-                    <h2>Welcome back, <?php echo htmlspecialchars(explode(' ', $userName)[0]); ?>! 👋</h2>
-                    <p>Ready to showcase your innovation? Submit your project and compete with the best minds on campus.</p>
-                    <a href="#" class="btn-light">Submit Project</a>
+                <div class="welcome-card" style="background: linear-gradient(135deg, #1e40af, #7c3aed);">
+                    <h2>Welcome, Admin! 🛡️</h2>
+                    <p>Full control over SPARK'26. Manage users, projects, departments, and event settings from here.</p>
+                    <a href="#" class="btn-light">System Settings</a>
                     <div class="welcome-decoration">
-                        <i class="ri-rocket-2-line"></i>
+                        <i class="ri-shield-star-line"></i>
                     </div>
                 </div>
 
@@ -128,25 +142,25 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                         </div>
                         <div class="stat-info">
                             <h3>0</h3>
-                            <p>Projects Submitted</p>
+                            <p>Total Projects</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon green">
-                            <i class="ri-checkbox-circle-line"></i>
+                            <i class="ri-user-line"></i>
                         </div>
                         <div class="stat-info">
                             <h3>0</h3>
-                            <p>Approved</p>
+                            <p>Registered Users</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon amber">
-                            <i class="ri-time-line"></i>
+                            <i class="ri-building-line"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>0</h3>
-                            <p>Pending Review</p>
+                            <h3>13</h3>
+                            <p>Departments</p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -155,7 +169,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                         </div>
                         <div class="stat-info">
                             <h3>6</h3>
-                            <p>Days to Expo</p>
+                            <p>Days to Event</p>
                         </div>
                     </div>
                 </div>
@@ -164,39 +178,39 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                 <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Quick Actions</h3>
                 <div class="quick-actions">
                     <div class="action-card">
-                        <div class="action-icon">
-                            <i class="ri-add-line"></i>
+                        <div class="action-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                            <i class="ri-user-add-line"></i>
                         </div>
                         <div>
-                            <h4>New Project</h4>
-                            <p>Submit a new project</p>
+                            <h4>Add User</h4>
+                            <p>Create new user account</p>
                         </div>
                     </div>
                     <div class="action-card">
                         <div class="action-icon">
-                            <i class="ri-team-line"></i>
+                            <i class="ri-megaphone-line"></i>
                         </div>
                         <div>
-                            <h4>Find Team</h4>
-                            <p>Join or create a team</p>
+                            <h4>Announcement</h4>
+                            <p>Broadcast to all users</p>
                         </div>
                     </div>
                     <div class="action-card">
                         <div class="action-icon">
-                            <i class="ri-book-open-line"></i>
+                            <i class="ri-file-chart-line"></i>
                         </div>
                         <div>
-                            <h4>View Guidelines</h4>
-                            <p>Read submission rules</p>
+                            <h4>Reports</h4>
+                            <p>Generate system reports</p>
                         </div>
                     </div>
                     <div class="action-card">
                         <div class="action-icon">
-                            <i class="ri-customer-service-line"></i>
+                            <i class="ri-shield-check-line"></i>
                         </div>
                         <div>
-                            <h4>Get Help</h4>
-                            <p>Contact support</p>
+                            <h4>Permissions</h4>
+                            <p>Manage user roles</p>
                         </div>
                     </div>
                 </div>
@@ -205,28 +219,30 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                 <div class="dashboard-grid" style="margin-top: 2rem;">
                     <div class="dash-card">
                         <div class="dash-card-header">
-                            <h3>Recent Announcements</h3>
+                            <h3>Recent Activity</h3>
                             <a href="#" style="color: var(--primary); font-size: 0.9rem;">View All</a>
                         </div>
                         <div class="dash-card-body">
-                            <p style="color: var(--text-muted);">No announcements yet.</p>
+                            <p style="color: var(--text-muted);">No recent activity.</p>
                         </div>
                     </div>
                     <div class="dash-card">
                         <div class="dash-card-header">
-                            <h3>Upcoming Deadlines</h3>
-                            <a href="#" style="color: var(--primary); font-size: 0.9rem;">View Schedule</a>
+                            <h3>System Status</h3>
+                            <span style="background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">All Systems Normal</span>
                         </div>
                         <div class="dash-card-body">
-                            <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
-                                <div style="width: 50px; height: 50px; background: var(--bg-surface); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                    <span style="font-size: 1.25rem; font-weight: 800; line-height: 1;">15</span>
-                                    <span style="font-size: 0.7rem; color: var(--text-muted);">FEB</span>
-                                </div>
-                                <div>
-                                    <h4 style="font-size: 0.95rem;">SPARK'26 Expo Day</h4>
-                                    <p style="font-size: 0.8rem; color: var(--text-muted);">Main Event</p>
-                                </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                                <span>Database</span>
+                                <span style="color: #22c55e;">● Online</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                                <span>File Storage</span>
+                                <span style="color: #22c55e;">● Online</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                                <span>Email Service</span>
+                                <span style="color: #22c55e;">● Online</span>
                             </div>
                         </div>
                     </div>
