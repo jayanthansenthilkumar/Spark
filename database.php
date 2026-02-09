@@ -52,7 +52,7 @@ $userRole = ucfirst($_SESSION['role'] ?? $_SESSION['user_role'] ?? 'Admin');
                         <div class="db-info">
                             <div class="db-info-item">
                                 <span class="db-label">Database Name</span>
-                                <span class="db-value">spark_db</span>
+                                <span class="db-value">spark</span>
                             </div>
                             <div class="db-info-item">
                                 <span class="db-label">Server</span>

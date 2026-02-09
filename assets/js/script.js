@@ -1,4 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // --- Sidebar Toggle for Mobile ---
+  window.toggleSidebar = function() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('open');
+    }
+  };
+
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', function(e) {
+    const sidebar = document.getElementById('sidebar');
+    const mobileToggle = document.querySelector('.mobile-toggle');
+    if (sidebar && sidebar.classList.contains('open')) {
+      if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+        sidebar.classList.remove('open');
+      }
+    }
+  });
+
   // --- Smooth Scrolling ---
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {

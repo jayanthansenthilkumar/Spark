@@ -173,11 +173,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
         </main>
     </div>
 
-    <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-    </script>
+    <script src="assets/js/script.js"></script>
 </body>
 
 </html>
