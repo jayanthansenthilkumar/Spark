@@ -14,7 +14,7 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="#" class="logo">
+            <a href="index.php" class="logo">
                 <div style="width:30px; height:30px; background:var(--primary); border-radius:8px;"></div>
                 SPARK <span>'26</span>
             </a>
@@ -22,9 +22,9 @@
                 <a href="#about" class="nav-link">About</a>
                 <a href="#tracks" class="nav-link">Tracks</a>
                 <a href="#schedule" class="nav-link">Schedule</a>
-                <a href="#sponsors" class="nav-link">Sponsors</a>
+                <a href="login.php" class="nav-link">Login</a>
             </div>
-            <a href="#register" class="btn-primary">Register Now</a>
+            <a href="register.php" class="btn-primary">Register Now</a>
         </div>
     </nav>
 
@@ -39,7 +39,7 @@
                     Showcase your final year project or first year prototype to industry leaders.
                 </p>
                 <div class="hero-actions">
-                    <a href="#register" class="btn-primary">Submit Project</a>
+                    <a href="register.php" class="btn-primary">Submit Project</a>
                     <a href="#about" class="btn-outline">View Guidelines</a>
                 </div>
             </div>
@@ -301,7 +301,7 @@
                 <div class="cta-circle c-2"></div>
                 <h2>Ready to Showcase?</h2>
                 <p>Don't miss the chance to be recognized as the best innovator on campus.</p>
-                <a href="#" class="btn-cta">Register Team</a>
+                <a href="register.php" class="btn-cta">Register Team</a>
             </div>
         </div>
     </section>
