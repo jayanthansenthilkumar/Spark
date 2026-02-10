@@ -12,8 +12,9 @@ max_execution_time = 120\n\
 memory_limit = 256M\n\
 date.timezone = Asia/Kolkata" > /usr/local/etc/php/conf.d/spark.ini
 
-# Enable Apache modules
-RUN a2enmod rewrite
+# Enable Apache modules & set ServerName
+RUN a2enmod rewrite \
+    && echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 # Set working directory
 WORKDIR /var/www/html

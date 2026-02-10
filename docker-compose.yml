@@ -24,7 +24,6 @@ services:
     ports:
       - "${APP_PORT:-8085}:80"
     volumes:
-      - .:/var/www/html
       - uploads:/var/www/html/assets/uploads
     environment:
       - DB_HOST=spark-db
