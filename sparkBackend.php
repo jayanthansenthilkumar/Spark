@@ -273,9 +273,10 @@ switch ($action) {
         $comments = trim($_POST['comments'] ?? '');
         $reviewerId = $_SESSION['user_id'];
         $role = $_SESSION['role'];
+        $customRedirect = trim($_POST['redirect'] ?? '');
 
         if (!in_array($decision, ['approved', 'rejected', 'pending'])) {
-            $redirect = ($role === 'departmentcoordinator') ? 'reviewApprove.php' : 'approvals.php';
+            $redirect = $customRedirect ?: (($role === 'departmentcoordinator') ? 'reviewApprove.php' : 'approvals.php');
             redirectWith($redirect, 'error', 'Invalid review decision');
         }
 
@@ -294,11 +295,12 @@ switch ($action) {
 
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_close($stmt);
-            $redirect = ($role === 'departmentcoordinator') ? 'reviewApprove.php' : 'approvals.php';
+            $redirect = $customRedirect ?: (($role === 'departmentcoordinator') ? 'reviewApprove.php' : 'approvals.php');
             redirectWith($redirect, 'success', 'Project ' . $decision . ' successfully');
         } else {
             mysqli_stmt_close($stmt);
-            redirectWith('reviewApprove.php', 'error', 'Failed to update project status');
+            $redirect = $customRedirect ?: 'reviewApprove.php';
+            redirectWith($redirect, 'error', 'Failed to update project status');
         }
         break;
 

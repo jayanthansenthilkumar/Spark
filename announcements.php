@@ -10,16 +10,23 @@ $userRole = ucfirst($_SESSION['role'] ?? $_SESSION['user_role'] ?? 'User');
 $role = $_SESSION['role'];
 $canCreate = in_array($role, ['admin', 'studentaffairs']);
 
-// Fetch announcements for this user's role using prepared statement
+// Fetch announcements - admin/studentaffairs see ALL, others see only their role + 'all'
 $announcements = [];
-$annStmt = mysqli_prepare($conn, "SELECT a.*, u.name as author_name FROM announcements a JOIN users u ON a.author_id = u.id WHERE a.target_role IN ('all', ?) ORDER BY a.is_featured DESC, a.created_at DESC");
-mysqli_stmt_bind_param($annStmt, "s", $role);
-mysqli_stmt_execute($annStmt);
-$annResult = mysqli_stmt_get_result($annStmt);
-while ($row = mysqli_fetch_assoc($annResult)) {
-    $announcements[] = $row;
+if ($canCreate) {
+    $annResult = mysqli_query($conn, "SELECT a.*, u.name as author_name FROM announcements a JOIN users u ON a.author_id = u.id ORDER BY a.is_featured DESC, a.created_at DESC");
+    while ($row = mysqli_fetch_assoc($annResult)) {
+        $announcements[] = $row;
+    }
+} else {
+    $annStmt = mysqli_prepare($conn, "SELECT a.*, u.name as author_name FROM announcements a JOIN users u ON a.author_id = u.id WHERE a.target_role IN ('all', ?) ORDER BY a.is_featured DESC, a.created_at DESC");
+    mysqli_stmt_bind_param($annStmt, "s", $role);
+    mysqli_stmt_execute($annStmt);
+    $annResult = mysqli_stmt_get_result($annStmt);
+    while ($row = mysqli_fetch_assoc($annResult)) {
+        $announcements[] = $row;
+    }
+    mysqli_stmt_close($annStmt);
 }
-mysqli_stmt_close($annStmt);
 
 $successMsg = $_SESSION['success'] ?? '';
 $errorMsg = $_SESSION['error'] ?? '';

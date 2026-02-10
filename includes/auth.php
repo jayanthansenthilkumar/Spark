@@ -39,9 +39,10 @@ function checkUserAccess($isPublic = false)
     // Including index.php as valid for logged in users as well.
     $allowed_pages = [
         'admin' => [
-            'sparkAdmin.php', 'analytics.php', 'allProjects.php', 'users.php', 
-            'departments.php', 'coordinators.php', 'schedule.php', 'announcements.php', 
-            'judging.php', 'settings.php', 'database.php', 'departmentStats.php',
+            'sparkAdmin.php', 'analytics.php', 'allProjects.php', 'approvals.php',
+            'users.php', 'students.php', 'departments.php', 'coordinators.php', 
+            'schedule.php', 'announcements.php', 'judging.php', 'guidelines.php',
+            'settings.php', 'database.php', 'departmentStats.php',
             'messages.php', 'profile.php', 'logout.php', 'index.php'
         ],
         'departmentcoordinator' => [

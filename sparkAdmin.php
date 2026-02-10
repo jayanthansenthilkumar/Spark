@@ -24,6 +24,11 @@ $result = mysqli_query($conn, "SELECT p.title, p.status, p.created_at, u.name as
 while ($row = mysqli_fetch_assoc($result)) {
     $recentProjects[] = $row;
 }
+
+// Flash messages
+$success = $_SESSION['success'] ?? '';
+$error = $_SESSION['error'] ?? '';
+unset($_SESSION['success'], $_SESSION['error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,6 +39,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     <title>Admin Dashboard | SPARK'26</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -72,6 +78,16 @@ while ($row = mysqli_fetch_assoc($result)) {
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">
+                <?php if ($success): ?>
+                    <div class="alert alert-success" style="background:#dcfce7;color:#166534;padding:1rem;border-radius:8px;margin-bottom:1rem;">
+                        <i class="ri-checkbox-circle-line"></i> <?php echo htmlspecialchars($success); ?>
+                    </div>
+                <?php endif; ?>
+                <?php if ($error): ?>
+                    <div class="alert alert-danger" style="background:#fef2f2;color:#991b1b;padding:1rem;border-radius:8px;margin-bottom:1rem;">
+                        <i class="ri-error-warning-line"></i> <?php echo htmlspecialchars($error); ?>
+                    </div>
+                <?php endif; ?>
                 <!-- Welcome Card -->
                 <div class="welcome-card" style="background: linear-gradient(135deg, #1e40af, #7c3aed);">
                     <h2>Welcome, Admin! 🛡️</h2>
@@ -222,6 +238,14 @@ while ($row = mysqli_fetch_assoc($result)) {
     </div>
 
     <script src="assets/js/script.js"></script>
+    <script>
+    <?php if ($success): ?>
+    Swal.fire({ icon: 'success', title: 'Success!', text: '<?php echo addslashes($success); ?>', confirmButtonColor: '#2563eb', timer: 3000, timerProgressBar: true });
+    <?php endif; ?>
+    <?php if ($error): ?>
+    Swal.fire({ icon: 'error', title: 'Oops!', text: '<?php echo addslashes($error); ?>', confirmButtonColor: '#2563eb' });
+    <?php endif; ?>
+    </script>
 </body>
 
 </html>

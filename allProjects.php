@@ -171,6 +171,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                                 <input type="hidden" name="project_id" value="<?php echo $p['id']; ?>">
                                                 <input type="hidden" name="decision" value="approved">
                                                 <input type="hidden" name="comments" value="Approved via project list">
+                                                <input type="hidden" name="redirect" value="allProjects.php">
                                                 <button type="submit" class="btn-icon" title="Approve" style="color:#22c55e;"><i class="ri-checkbox-circle-line"></i></button>
                                             </form>
                                             <form action="sparkBackend.php" method="POST" style="display:inline;">
@@ -178,7 +179,16 @@ unset($_SESSION['success'], $_SESSION['error']);
                                                 <input type="hidden" name="project_id" value="<?php echo $p['id']; ?>">
                                                 <input type="hidden" name="decision" value="rejected">
                                                 <input type="hidden" name="comments" value="Rejected via project list">
+                                                <input type="hidden" name="redirect" value="allProjects.php">
                                                 <button type="submit" class="btn-icon" title="Reject" style="color:#ef4444;"><i class="ri-close-circle-line"></i></button>
+                                            </form>
+                                            <?php elseif ($p['status'] !== 'pending' && in_array($_SESSION['role'], ['admin', 'studentaffairs'])): ?>
+                                            <form action="sparkBackend.php" method="POST" style="display:inline;">
+                                                <input type="hidden" name="action" value="review_project">
+                                                <input type="hidden" name="project_id" value="<?php echo $p['id']; ?>">
+                                                <input type="hidden" name="decision" value="pending">
+                                                <input type="hidden" name="redirect" value="allProjects.php">
+                                                <button type="submit" class="btn-icon" title="Revert to Pending" style="color:#f59e0b;"><i class="ri-arrow-go-back-line"></i></button>
                                             </form>
                                             <?php endif; ?>
                                             <?php if (in_array($_SESSION['role'], ['admin', 'studentaffairs'])): ?>
