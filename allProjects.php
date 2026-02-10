@@ -107,8 +107,8 @@ unset($_SESSION['success'], $_SESSION['error']);
 
             <div class="dashboard-content">
 
-                <div class="content-header" style="flex-direction:column;align-items:flex-start;gap:1rem;">
-                    <div style="width:100%;display:flex;justify-content:space-between;align-items:center;">
+                <div class="content-header stacked">
+                    <div class="header-top">
                         <h2>Project Management</h2>
                         <div class="filter-controls">
                             <form method="GET" style="display:flex;gap:0.5rem;">

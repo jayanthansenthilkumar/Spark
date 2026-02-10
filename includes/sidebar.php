@@ -76,21 +76,11 @@ $menus = [
             ['link' => 'allProjects.php', 'icon' => 'ri-folder-line', 'text' => 'All Projects'],
             ['link' => 'approvals.php', 'icon' => 'ri-checkbox-circle-line', 'text' => 'Approvals'],
             ['link' => 'users.php', 'icon' => 'ri-user-line', 'text' => 'Users'],
-            ['link' => 'students.php', 'icon' => 'ri-group-line', 'text' => 'Students'],
-            ['link' => 'departments.php', 'icon' => 'ri-building-line', 'text' => 'Departments'],
             ['link' => 'coordinators.php', 'icon' => 'ri-team-line', 'text' => 'Coordinators']
         ],
         'Event' => [
-            ['link' => 'schedule.php', 'icon' => 'ri-calendar-line', 'text' => 'Schedule'],
             ['link' => 'announcements.php', 'icon' => 'ri-megaphone-line', 'text' => 'Announcements'],
-            ['link' => 'judging.php', 'icon' => 'ri-award-line', 'text' => 'Judging'],
-            ['link' => 'guidelines.php', 'icon' => 'ri-file-list-line', 'text' => 'Guidelines'],
-            ['link' => 'messages.php', 'icon' => 'ri-mail-line', 'text' => 'Messages']
-        ],
-        'System' => [
-            ['link' => 'profile.php', 'icon' => 'ri-user-line', 'text' => 'Profile'],
-            ['link' => 'settings.php', 'icon' => 'ri-settings-3-line', 'text' => 'Settings'],
-            // ['link' => 'database.php', 'icon' => 'ri-database-line', 'text' => 'Database']
+            ['link' => 'judging.php', 'icon' => 'ri-award-line', 'text' => 'Judging']
         ]
     ],
     'departmentcoordinator' => [

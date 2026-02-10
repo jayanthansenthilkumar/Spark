@@ -88,8 +88,8 @@ unset($_SESSION['success'], $_SESSION['error']);
 
             <div class="dashboard-content">
 
-                <div class="content-header" style="flex-direction:column;align-items:flex-start;gap:1rem;">
-                    <div style="width:100%;display:flex;justify-content:space-between;align-items:center;">
+                <div class="content-header stacked">
+                    <div class="header-top">
                         <h2>All Users</h2>
                         <button class="btn-primary" onclick="showAddUser()">
                             <i class="ri-add-line"></i> Add User

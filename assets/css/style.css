@@ -3365,3 +3365,254 @@ ul {
   background: var(--border);
   margin: 0.25rem 0;
 }
+/* --- Refined Views CSS --- */
+
+/* Guidelines Grid */
+.guidelines-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.guideline-section {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.guideline-section:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.guidelines-grid .guideline-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary);
+}
+
+.guidelines-grid .guideline-section ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.guidelines-grid .guideline-section ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+}
+
+.guidelines-grid .guideline-section ul li::before {
+    content: "";
+    color: var(--primary);
+    font-weight: bold;
+    position: absolute;
+    left: 0.25rem;
+}
+
+@media (max-width: 900px) {
+  .guidelines-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Announcements Grid */
+.announcements-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.announcement-card {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  height: 100%;
+}
+
+.announcement-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.announcement-card.featured {
+  border-left: 4px solid var(--accent);
+  background: linear-gradient(to bottom right, #fff, #fffbf0);
+}
+
+.announcement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.announcement-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.announcement-badge.new {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--accent);
+}
+
+.announcement-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.announcement-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    color: var(--text-main);
+    flex-grow: 1;
+}
+
+.announcement-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.announcement-footer {
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+@media (max-width: 1400px) {
+    .announcements-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    .announcements-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .announcements-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tabs Interface */
+.tabs-container {
+    display: flex;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-link {
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-link:hover {
+    color: var(--primary);
+    background: var(--bg-surface);
+}
+
+.tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+/* Fix for empty state in grid */
+.announcements-container .empty-state {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Stacked Content Header (for pages with tabs/filters below title) */
+.content-header.stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.content-header.stacked .header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+}
+
+.content-header.stacked .header-top h2 {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+/* Ensure filter controls align nicely */
+.header-top .filter-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}

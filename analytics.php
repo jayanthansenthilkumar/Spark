@@ -56,13 +56,7 @@ while ($row = mysqli_fetch_assoc($monthlyResult)) {
 
 <body>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-    </style>
+
     <div class="dashboard-container">
         <?php include 'includes/sidebar.php'; ?>
 
