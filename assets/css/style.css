@@ -1212,48 +1212,51 @@ ul {
 /* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
+  height: 100vh;
   background: white;
   border-right: 1px solid var(--border);
   position: fixed;
   top: 0;
-  bottom: 0;
   left: 0;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
+  z-index: 50;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
 }
 
 .sidebar-header {
   height: var(--header-height);
   display: flex;
   align-items: center;
+  justify-content: center; /* Centered */
   padding: 0 1.5rem;
   border-bottom: 1px solid var(--border);
 }
 
-.sidebar-header .logo {
-  font-size: 1.25rem;
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.logo span {
+  color: var(--text-main);
 }
 
 .sidebar-menu {
-  flex: 1;
   padding: 1.5rem 1rem;
-  overflow-y: auto;
 }
 
 .menu-label {
   font-size: 0.75rem;
   font-weight: 700;
-  text-transform: uppercase;
   color: var(--text-muted);
+  text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 0 1rem;
-  margin-bottom: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-.menu-label:first-child {
-  margin-top: 0;
+  margin: 1.5rem 0 0.5rem 0.75rem;
 }
 
 .menu-item {
@@ -1263,27 +1266,141 @@ ul {
   padding: 0.75rem 1rem;
   color: var(--text-muted);
   border-radius: 8px;
-  margin-bottom: 0.25rem;
   font-weight: 500;
   transition: all 0.2s;
+  text-decoration: none;
+  margin-bottom: 0.25rem;
 }
 
 .menu-item:hover {
   background: var(--bg-surface);
-  color: var(--text-main);
+  color: var(--primary);
 }
 
 .menu-item.active {
   background: rgba(37, 99, 235, 0.1);
   color: var(--primary);
+  font-weight: 600;
 }
 
 .menu-item i {
-  width: 20px;
-  text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
 }
 
+/* Sidebar Dropdown Styles */
+.sidebar-dropdown {
+    margin-bottom: 0.1rem; /* minimal spacing */
+}
+
+.dropdown-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem; /* Same as menu-item */
+  color: var(--text-muted);
+  border-radius: 8px;
+  font-weight: 500; /* Match menu-item weight */
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  width: 100%;
+  background: transparent;
+  text-decoration: none;
+}
+
+.dropdown-header:hover {
+  background: var(--bg-surface);
+  color: var(--primary);
+}
+
+.sidebar-dropdown.open .dropdown-header {
+  color: var(--primary);
+  font-weight: 600; /* Highlight active parent */
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.dropdown-header span {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Match menu-item gap */
+  color: inherit;
+  font-size: 1rem; /* Explicit size */
+}
+
+.dropdown-header span i {
+    font-size: 1.25rem; /* Match menu-item icon size */
+    width: 24px; /* Fixed width for alignment */
+    text-align: center;
+}
+
+.dropdown-toggle-icon {
+  transition: transform 0.3s ease;
+  font-size: 1.1rem;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.sidebar-dropdown.open .dropdown-toggle-icon {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+.dropdown-content {
+  display: none;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.sidebar-dropdown.open .dropdown-content {
+  display: block;
+}
+
+.dropdown-content .menu-item {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem 0.5rem 3.5rem; /* Indent text to align with parent text (icon width + gap + padding) */
+    background: transparent;
+    margin-bottom: 0;
+}
+
+.dropdown-content .menu-item:hover {
+    color: var(--primary);
+    background: transparent; /* specific hover for clean look? Or keep surface */
+    background: var(--bg-surface); /* Keep consistent */
+}
+
+.dropdown-content .menu-item i {
+    font-size: 1rem;
+    position: absolute;
+    left: 2rem; /* Position icon in the indentation space */
+    width: 20px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+/* Update general menu-item style to support relative positioning for the icon in dropdowns if needed, 
+   but cleaner to just let flex handle if not using absolute. 
+   Let's stick to flex indentation. */
+.dropdown-content .menu-item {
+    padding-left: 2.75rem; /* Indent past the parent icon */
+    position: relative;
+}
+
+.dropdown-content .menu-item i {
+    font-size: 1.1rem;
+    position: absolute;
+    left: 1rem; /* Align under parent icon? No, indented. */
+    left: 1.25rem; 
+    /* Actually, simpler: just flex with gap */
+    position: static;
+    font-size: 1rem; 
+}
+
+/* Resetting to simple flex for submenu */
+.dropdown-content .menu-item {
+    padding-left: 2.5rem; /* Visual indentation */
+    justify-content: flex-start;
+}
 .sidebar-footer {
   padding: 1rem;
   border-top: 1px solid var(--border);
@@ -3615,4 +3732,155 @@ ul {
     margin-left: auto;
     display: flex;
     align-items: center;
+}
+
+/* Team Cards */
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.team-card {
+    background: white;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.team-card:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.team-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.team-badge {
+    background: var(--bg-surface);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.team-project {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 0.75rem;
+    background: var(--bg-surface);
+    border-radius: 8px;
+}
+
+.team-project i {
+    font-size: 1.1rem;
+}
+
+.team-members {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.member {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.member-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.member-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.member-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.member-role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Generic Badge Styles */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.badge-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-danger {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* Status Badge Extensions */
+.status-badge.status-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.status-inactive {
+    background: #fef2f2;
+    color: #991b1b;
 }

@@ -14,10 +14,10 @@ $role = $_SESSION['role'] ?? $_SESSION['user_role'] ?? '';
 $deptFilter = buildDeptFilter($userDept);
 
 // Query teams with project and leader info
-$sql = "SELECT t.*, p.title as project_title, u.name as leader_name,
+$sql = "SELECT t.*, p.title as project_title, p.status as project_status, u.name as leader_name,
         (SELECT COUNT(*) FROM team_members WHERE team_id = t.id) as member_count
         FROM teams t
-        LEFT JOIN projects p ON t.project_id = p.id
+        LEFT JOIN projects p ON p.team_id = t.id
         LEFT JOIN users u ON t.leader_id = u.id";
 
 if (strtolower($role) === 'departmentcoordinator') {
@@ -84,16 +84,38 @@ unset($_SESSION['success'], $_SESSION['error']);
                     <div class="teams-grid">
                         <?php foreach ($teams as $team):
                             $leaderInitials = strtoupper(substr($team['leader_name'] ?? 'NA', 0, 2));
+                            $statusColors = [
+                                'approved' => 'background:#dcfce7; color:#166534; border-color:#bbf7d0;',
+                                'rejected' => 'background:#fef2f2; color:#991b1b; border-color:#fecaca;',
+                                'pending' => 'background:#fef3c7; color:#92400e; border-color:#fde68a;'
+                            ];
+                            $pStatus = $team['project_status'] ?? 'pending';
+                            $statusStyle = $statusColors[$pStatus] ?? $statusColors['pending'];
                             ?>
                             <div class="team-card">
                                 <div class="team-header">
                                     <h3><?php echo htmlspecialchars($team['team_name']); ?></h3>
                                     <span class="team-badge"><?php echo (int) $team['member_count']; ?> Members</span>
                                 </div>
-                                <div class="team-project">
-                                    <i class="ri-folder-line"></i>
-                                    <span><?php echo htmlspecialchars($team['project_title'] ?? 'No project assigned'); ?></span>
-                                </div>
+                                <?php if (!empty($team['project_title'])): ?>
+                                    <div class="team-project assigned"
+                                        style="<?php echo $statusStyle; ?> border:1px solid; display:flex; justify-content:space-between; align-items:center;">
+                                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                                            <i class="ri-folder-check-line"></i>
+                                            <span
+                                                style="font-weight:600;"><?php echo htmlspecialchars($team['project_title']); ?></span>
+                                        </div>
+                                        <span
+                                            style="font-size:0.7rem; text-transform:uppercase; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.5);">
+                                            <?php echo htmlspecialchars($pStatus); ?>
+                                        </span>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="team-project unassigned" style="background:#f1f5f9; color:#64748b;">
+                                        <i class="ri-folder-line"></i>
+                                        <span>No project assigned</span>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="team-members">
                                     <div class="member">
                                         <div class="member-avatar"><?php echo $leaderInitials; ?></div>

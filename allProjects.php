@@ -54,8 +54,9 @@ function getTabLink($year)
 // Count total
 $countQuery = "SELECT COUNT(*) as total FROM projects p JOIN users u ON p.student_id = u.id $where";
 $countStmt = mysqli_prepare($conn, $countQuery);
-if ($types)
+if ($types) {
     mysqli_stmt_bind_param($countStmt, $types, ...$params);
+}
 mysqli_stmt_execute($countStmt);
 $totalRows = mysqli_fetch_assoc(mysqli_stmt_get_result($countStmt))['total'];
 mysqli_stmt_close($countStmt);
@@ -207,36 +208,11 @@ unset($_SESSION['success'], $_SESSION['error']);
                                         </td>
                                         <td><?php echo date('M d, Y', strtotime($p['created_at'])); ?></td>
                                         <td>
-                                            <div style="display:flex;gap:0.5rem;">
-                                                <?php if ($p['status'] === 'pending' && $_SESSION['role'] !== 'student'): ?>
-                                                    <form action="sparkBackend.php" method="POST" style="display:inline;">
-                                                        <input type="hidden" name="action" value="review_project">
-                                                        <input type="hidden" name="project_id" value="<?php echo $p['id']; ?>">
-                                                        <input type="hidden" name="decision" value="approved">
-                                                        <input type="hidden" name="comments" value="Approved via project list">
-                                                        <input type="hidden" name="redirect" value="allProjects.php">
-                                                        <button type="submit" class="btn-icon" title="Approve"
-                                                            style="color:#22c55e;"><i class="ri-checkbox-circle-line"></i></button>
-                                                    </form>
-                                                    <form action="sparkBackend.php" method="POST" style="display:inline;">
-                                                        <input type="hidden" name="action" value="review_project">
-                                                        <input type="hidden" name="project_id" value="<?php echo $p['id']; ?>">
-                                                        <input type="hidden" name="decision" value="rejected">
-                                                        <input type="hidden" name="comments" value="Rejected via project list">
-                                                        <input type="hidden" name="redirect" value="allProjects.php">
-                                                        <button type="submit" class="btn-icon" title="Reject"
-                                                            style="color:#ef4444;"><i class="ri-close-circle-line"></i></button>
-                                                    </form>
-                                                <?php elseif ($p['status'] !== 'pending' && in_array($_SESSION['role'], ['admin', 'studentaffairs'])): ?>
-                                                    <form action="sparkBackend.php" method="POST" style="display:inline;">
-                                                        <input type="hidden" name="action" value="review_project">
-                                                        <input type="hidden" name="project_id" value="<?php echo $p['id']; ?>">
-                                                        <input type="hidden" name="decision" value="pending">
-                                                        <input type="hidden" name="redirect" value="allProjects.php">
-                                                        <button type="submit" class="btn-icon" title="Revert to Pending"
-                                                            style="color:#f59e0b;"><i class="ri-arrow-go-back-line"></i></button>
-                                                    </form>
-                                                <?php endif; ?>
+                                            <div style="display:flex;gap:0.5rem;justify-content:center;">
+                                                <button class="btn-icon" onclick="viewProject(<?php echo $p['id']; ?>)"
+                                                    title="View Details">
+                                                    <i class="ri-eye-line"></i>
+                                                </button>
                                                 <?php if (in_array($_SESSION['role'], ['admin', 'studentaffairs'])): ?>
                                                     <form action="sparkBackend.php" method="POST" style="display:inline;"
                                                         class="confirm-delete-form">
@@ -253,16 +229,20 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <?php endif; ?>
                         </tbody>
                     </table>
-                </div>
 
-                <div class="pagination">
-                    <a href="?page=<?php echo max(1, $page - 1); ?>&category=<?php echo $filterCategory; ?>&status=<?php echo $filterStatus; ?>"
-                        class="btn-pagination" <?php if ($page <= 1)
-                            echo 'disabled'; ?>>&laquo; Previous</a>
-                    <span class="page-info">Page <?php echo $page; ?> of <?php echo $totalPages; ?></span>
-                    <a href="?page=<?php echo min($totalPages, $page + 1); ?>&category=<?php echo $filterCategory; ?>&status=<?php echo $filterStatus; ?>"
-                        class="btn-pagination" <?php if ($page >= $totalPages)
-                            echo 'disabled'; ?>>Next &raquo;</a>
+                    <?php if ($totalPages > 1): ?>
+                        <div class="pagination">
+                            <?php if ($page > 1): ?>
+                                <a href="?page=<?php echo $page - 1; ?>&<?php echo http_build_query(array_merge($_GET, ['page' => null])); ?>"
+                                    class="btn-pagination">« Previous</a>
+                            <?php endif; ?>
+                            <span class="page-info">Page <?php echo $page; ?> of <?php echo $totalPages; ?></span>
+                            <?php if ($page < $totalPages): ?>
+                                <a href="?page=<?php echo $page + 1; ?>&<?php echo http_build_query(array_merge($_GET, ['page' => null])); ?>"
+                                    class="btn-pagination">Next »</a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </main>
@@ -270,18 +250,133 @@ unset($_SESSION['success'], $_SESSION['error']);
 
     <script src="assets/js/script.js"></script>
     <script>
+        const projectsData = <?php echo json_encode($projects); ?>;
+        const userRole = "<?php echo $_SESSION['role']; ?>";
+
+        function viewProject(id) {
+            const project = projectsData.find(p => p.id == id);
+            if (!project) return;
+
+            const isCoordinator = userRole === 'departmentcoordinator';
+            const isAdminOrAffairs = ['admin', 'studentaffairs'].includes(userRole);
+            const isPending = project.status === 'pending';
+
+            let actionButtons = '';
+
+            // Approval Flow for Coordinators
+            if (isCoordinator && isPending) {
+                actionButtons = `
+                    <div style="display:flex;gap:1rem;margin-top:1.5rem;border-top:1px solid #eee;padding-top:1rem;">
+                        <button onclick="submitReview(${project.id}, 'approved')" class="btn-primary" style="background:#22c55e;flex:1;">
+                            <i class="ri-checkbox-circle-line"></i> Approve
+                        </button>
+                        <button onclick="submitReview(${project.id}, 'rejected')" class="btn-primary" style="background:#ef4444;flex:1;">
+                            <i class="ri-close-circle-line"></i> Reject
+                        </button>
+                    </div>
+                `;
+            }
+            // Revert Flow for Admin/Affairs
+            else if (isAdminOrAffairs && !isPending) {
+                actionButtons = `
+                    <div style="margin-top:1.5rem;border-top:1px solid #eee;padding-top:1rem;">
+                        <button onclick="submitReview(${project.id}, 'pending')" class="btn-secondary" style="width:100%;">
+                            <i class="ri-arrow-go-back-line"></i> Revert to Pending
+                        </button>
+                    </div>
+                `;
+            }
+
+            Swal.fire({
+                title: `<span style="font-size:1.5rem;color:var(--primary);">${escapeHtml(project.title)}</span>`,
+                html: `
+                    <div style="text-align:left;font-size:0.95rem;line-height:1.6;">
+                        <div style="background:#f8fafc;padding:1rem;border-radius:8px;margin-bottom:1rem;border:1px solid #e2e8f0;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.5rem;">
+                                <div><strong>ID:</strong> #${project.id}</div>
+                                <div><strong>Status:</strong> 
+                                    <span style="padding:0.1rem 0.5rem;border-radius:4px;font-size:0.8rem;font-weight:600;
+                                        background:${getStatusColor(project.status).bg};color:${getStatusColor(project.status).color};">
+                                        ${project.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div><strong>Lead:</strong> ${escapeHtml(project.student_name)}</div>
+                                <div><strong>Category:</strong> ${escapeHtml(project.category)}</div>
+                            </div>
+                            <div><strong>Members:</strong> ${escapeHtml(project.team_members || 'N/A')}</div>
+                        </div>
+
+                        <div style="margin-bottom:1rem;">
+                            <strong style="display:block;margin-bottom:0.3rem;color:var(--text-main);">Abstract:</strong>
+                            <div style="max-height:150px;overflow-y:auto;padding:0.5rem;background:white;border:1px solid #eee;border-radius:6px;color:#4b5563;">
+                                ${escapeHtml(project.description)}
+                            </div>
+                        </div>
+
+                        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                            ${project.github_link ? `
+                                <a href="${escapeHtml(project.github_link)}" target="_blank" class="btn-secondary btn-sm" style="text-decoration:none;">
+                                    <i class="ri-github-fill"></i> GitHub
+                                </a>` : ''}
+                            ${project.file_path ? `
+                                <a href="${escapeHtml(project.file_path)}" target="_blank" class="btn-secondary btn-sm" style="text-decoration:none;">
+                                    <i class="ri-file-pdf-line"></i> Documentation
+                                </a>` : '<span style="font-size:0.85rem;color:#9ca3af;"><i class="ri-error-warning-line"></i> No Document</span>'}
+                        </div>
+
+                        ${actionButtons}
+                    </div>
+                `,
+                width: 600,
+                showConfirmButton: false,
+                showCloseButton: true,
+                focusConfirm: false
+            });
+        }
+
+        function submitReview(id, decision) {
+            const comments = decision === 'rejected' ? 'Rejected by coordinator' : 'Approved by coordinator';
+            // Create hidden form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'sparkBackend.php';
+            form.innerHTML = `
+                <input type="hidden" name="action" value="review_project">
+                <input type="hidden" name="project_id" value="${id}">
+                <input type="hidden" name="decision" value="${decision}">
+                <input type="hidden" name="comments" value="${comments}">
+                <input type="hidden" name="redirect" value="allProjects.php">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function getStatusColor(status) {
+            if (status === 'approved') return { bg: '#dcfce7', color: '#166534' };
+            if (status === 'rejected') return { bg: '#fef2f2', color: '#991b1b' };
+            return { bg: '#fef3c7', color: '#92400e' };
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         <?php if ($successMsg): ?>
             Swal.fire({ icon: 'success', title: 'Success!', text: '<?php echo addslashes($successMsg); ?>', confirmButtonColor: '#2563eb', timer: 3000, timerProgressBar: true });
         <?php endif; ?>
         <?php if ($errorMsg): ?>
             Swal.fire({ icon: 'error', title: 'Oops!', text: '<?php echo addslashes($errorMsg); ?>', confirmButtonColor: '#2563eb' });
         <?php endif; ?>
+
         document.querySelectorAll('.confirm-delete-form').forEach(form => {
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const formEl = this;
                 Swal.fire({
-                    title: 'Are you sure?',
+                    title: 'Delete Project?',
                     text: 'This action cannot be undone.',
                     icon: 'warning',
                     showCancelButton: true,

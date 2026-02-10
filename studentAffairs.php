@@ -122,8 +122,26 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <i class="ri-checkbox-circle-line"></i>
                         </div>
                         <div>
-                            <h4>Review Projects</h4>
+                            <h4>Review Approvals</h4>
                             <p>Approve or reject submissions</p>
+                        </div>
+                    </a>
+                    <a href="allProjects.php" class="action-card" style="text-decoration:none;color:inherit;">
+                        <div class="action-icon">
+                            <i class="ri-folder-line"></i>
+                        </div>
+                        <div>
+                            <h4>All Projects</h4>
+                            <p>Browse project database</p>
+                        </div>
+                    </a>
+                    <a href="users.php" class="action-card" style="text-decoration:none;color:inherit;">
+                        <div class="action-icon">
+                            <i class="ri-user-settings-line"></i>
+                        </div>
+                        <div>
+                            <h4>User Management</h4>
+                            <p>Manage students & staff</p>
                         </div>
                     </a>
                     <a href="announcements.php" class="action-card" style="text-decoration:none;color:inherit;">
@@ -131,75 +149,78 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <i class="ri-megaphone-line"></i>
                         </div>
                         <div>
-                            <h4>Post Announcement</h4>
-                            <p>Notify all students</p>
-                        </div>
-                    </a>
-                    <a href="students.php" class="action-card" style="text-decoration:none;color:inherit;">
-                        <div class="action-icon">
-                            <i class="ri-group-line"></i>
-                        </div>
-                        <div>
-                            <h4>View Students</h4>
-                            <p>Browse all students</p>
-                        </div>
-                    </a>
-                    <a href="schedule.php" class="action-card" style="text-decoration:none;color:inherit;">
-                        <div class="action-icon">
-                            <i class="ri-calendar-check-line"></i>
-                        </div>
-                        <div>
-                            <h4>Schedule Event</h4>
-                            <p>Manage event timeline</p>
+                            <h4>Announcements</h4>
+                            <p>Post updates & notices</p>
                         </div>
                     </a>
                 </div>
 
                 <!-- Dashboard Grid -->
                 <div class="dashboard-grid" style="margin-top: 2rem;">
+                    <!-- Recent Projects Card -->
                     <div class="dash-card">
                         <div class="dash-card-header">
-                            <h3>Recent Submissions</h3>
-                            <a href="approvals.php" style="color: var(--primary); font-size: 0.9rem;">View All</a>
+                            <h3>Recent Projects</h3>
+                            <a href="allProjects.php" style="color: var(--primary); font-size: 0.9rem;">View All</a>
                         </div>
                         <div class="dash-card-body">
                             <?php if (mysqli_num_rows($recentResult) > 0): ?>
-                                <?php while ($proj = mysqli_fetch_assoc($recentResult)): ?>
-                                    <div
-                                        style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid var(--border);">
-                                        <div>
-                                            <strong
-                                                style="font-size:0.9rem;"><?php echo htmlspecialchars($proj['title']); ?></strong>
-                                            <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">by
-                                                <?php echo htmlspecialchars($proj['student_name'] ?? 'Unknown'); ?> &bull;
-                                                <?php echo htmlspecialchars($proj['department']); ?></p>
+                                <?php
+                                // Reset pointer if improved logic needed, but here simple iteration works
+                                // Note: result pointer might be exhausted if reused. RecentResult is created at top.
+                                mysqli_data_seek($recentResult, 0); 
+                                while ($proj = mysqli_fetch_assoc($recentResult)): ?>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid var(--border);">
+                                        <div style="flex-grow:1;">
+                                            <strong style="display:block;font-size:0.95rem;margin-bottom:0.1rem;"><?php echo htmlspecialchars($proj['title']); ?></strong>
+                                            <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">
+                                                <i class="ri-user-line" style="margin-right:0.2rem;"></i> <?php echo htmlspecialchars($proj['student_name'] ?? 'Unknown'); ?> 
+                                                <span style="margin:0 0.3rem;">&bull;</span> 
+                                                <i class="ri-building-line" style="margin-right:0.2rem;"></i> <?php echo htmlspecialchars($proj['department']); ?>
+                                            </p>
                                         </div>
-                                        <span
-                                            class="status-badge <?php echo $proj['status']; ?>"><?php echo ucfirst($proj['status']); ?></span>
+                                        <span class="status-badge <?php echo 'status-' . $proj['status']; ?>" style="font-size:0.75rem;padding:0.2rem 0.5rem;border-radius:4px;background:<?php echo $proj['status']=='approved' ? '#dcfce7' : ($proj['status']=='rejected' ? '#fef2f2' : '#fef3c7'); ?>;color:<?php echo $proj['status']=='approved' ? '#166534' : ($proj['status']=='rejected' ? '#991b1b' : '#92400e'); ?>;">
+                                            <?php echo ucfirst($proj['status']); ?>
+                                        </span>
                                     </div>
                                 <?php endwhile; ?>
                             <?php else: ?>
-                                <p style="color: var(--text-muted);">No submissions yet.</p>
+                                <div class="empty-state small">
+                                    <i class="ri-folder-open-line"></i>
+                                    <p>No projects submitted yet.</p>
+                                </div>
                             <?php endif; ?>
                         </div>
                     </div>
+
+                    <!-- Announcements Card (Replacing Department Overview since Departments page isn't in sidebar) -->
                     <div class="dash-card">
                         <div class="dash-card-header">
-                            <h3>Department Overview</h3>
-                            <a href="departments.php" style="color: var(--primary); font-size: 0.9rem;">View Details</a>
+                            <h3>Recent Announcements</h3>
+                            <a href="announcements.php" style="color: var(--primary); font-size: 0.9rem;">View All</a>
                         </div>
                         <div class="dash-card-body">
-                            <?php if (mysqli_num_rows($deptOverview) > 0): ?>
-                                <?php while ($dept = mysqli_fetch_assoc($deptOverview)): ?>
-                                    <div
-                                        style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);">
-                                        <span><?php echo htmlspecialchars($dept['department']); ?></span>
-                                        <span class="badge"><?php echo $dept['cnt']; ?>
-                                            project<?php echo $dept['cnt'] != 1 ? 's' : ''; ?></span>
+                            <?php
+                            $recentAnnouncements = mysqli_query($conn, "SELECT * FROM announcements ORDER BY created_at DESC LIMIT 5");
+                            if (mysqli_num_rows($recentAnnouncements) > 0): ?>
+                                <?php while ($ann = mysqli_fetch_assoc($recentAnnouncements)): ?>
+                                    <div style="padding:0.75rem 0;border-bottom:1px solid var(--border);">
+                                        <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">
+                                            <span class="badge" style="background:#eff6ff;color:var(--primary);font-size:0.7rem;padding:0.1rem 0.4rem;border-radius:4px;">
+                                                <?php echo ucfirst($ann['target_role']); ?>
+                                            </span>
+                                            <span style="font-size:0.75rem;color:var(--text-muted);">
+                                                <?php echo date('M d', strtotime($ann['created_at'])); ?>
+                                            </span>
+                                        </div>
+                                        <h4 style="font-size:0.95rem;margin:0 0 0.2rem 0;"><?php echo htmlspecialchars($ann['title']); ?></h4>
                                     </div>
                                 <?php endwhile; ?>
                             <?php else: ?>
-                                <p style="color: var(--text-muted);">No data available.</p>
+                                <div class="empty-state small">
+                                    <i class="ri-notification-off-line"></i>
+                                    <p>No announcements.</p>
+                                </div>
                             <?php endif; ?>
                         </div>
                     </div>

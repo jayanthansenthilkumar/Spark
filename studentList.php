@@ -121,9 +121,10 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <div class="content-header">
                     <h2>Students in Your Department - <span class="badge"><?php echo $totalStudents; ?></span></h2>
                     <div class="header-actions">
-                        <button class="btn-secondary">
+                        <a href="sparkBackend.php?action=export_students" class="btn-secondary"
+                            style="text-decoration:none;">
                             <i class="ri-download-line"></i> Export List
-                        </button>
+                        </a>
                     </div>
                 </div>
 

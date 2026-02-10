@@ -6,7 +6,8 @@ require_once 'includes/auth.php';
 // ==========================================
 // HELPER: Redirect with message
 // ==========================================
-function redirectWith($url, $type, $message) {
+function redirectWith($url, $type, $message)
+{
     $_SESSION[$type] = $message;
     header("Location: $url");
     exit();
@@ -15,13 +16,19 @@ function redirectWith($url, $type, $message) {
 // ==========================================
 // HELPER: Get role-based dashboard URL
 // ==========================================
-function getDashboardUrl($role) {
+function getDashboardUrl($role)
+{
     switch ($role) {
-        case 'student': return 'studentDashboard.php';
-        case 'studentaffairs': return 'studentAffairs.php';
-        case 'departmentcoordinator': return 'departmentCoordinator.php';
-        case 'admin': return 'sparkAdmin.php';
-        default: return 'studentDashboard.php';
+        case 'student':
+            return 'studentDashboard.php';
+        case 'studentaffairs':
+            return 'studentAffairs.php';
+        case 'departmentcoordinator':
+            return 'departmentCoordinator.php';
+        case 'admin':
+            return 'sparkAdmin.php';
+        default:
+            return 'studentDashboard.php';
     }
 }
 
@@ -175,7 +182,7 @@ switch ($action) {
         $leaderRow = mysqli_fetch_assoc(mysqli_stmt_get_result($leaderCheckStmt));
         mysqli_stmt_close($leaderCheckStmt);
 
-        if (!$leaderRow || (int)$leaderRow['leader_id'] !== (int)$studentId) {
+        if (!$leaderRow || (int) $leaderRow['leader_id'] !== (int) $studentId) {
             redirectWith('myProjects.php', 'error', 'Only the team leader can submit projects.');
         }
 
@@ -202,7 +209,8 @@ switch ($action) {
             }
         }
 
-        $stmt = mysqli_prepare($conn, 
+        $stmt = mysqli_prepare(
+            $conn,
             "INSERT INTO projects (title, description, category, student_id, team_id, department, team_members, github_link, file_path) 
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
@@ -238,7 +246,7 @@ switch ($action) {
             $lRow = mysqli_fetch_assoc(mysqli_stmt_get_result($leaderChk));
             mysqli_stmt_close($leaderChk);
 
-            if (!$lRow || (int)$lRow['leader_id'] !== (int)$userId) {
+            if (!$lRow || (int) $lRow['leader_id'] !== (int) $userId) {
                 redirectWith('myProjects.php', 'error', 'Only the team leader can delete projects.');
             }
 
@@ -282,12 +290,14 @@ switch ($action) {
 
         // If reverting to pending, clear review fields
         if ($decision === 'pending') {
-            $stmt = mysqli_prepare($conn, 
+            $stmt = mysqli_prepare(
+                $conn,
                 "UPDATE projects SET status = 'pending', reviewed_by = NULL, review_comments = NULL, reviewed_at = NULL WHERE id = ?"
             );
             mysqli_stmt_bind_param($stmt, "i", $projectId);
         } else {
-            $stmt = mysqli_prepare($conn, 
+            $stmt = mysqli_prepare(
+                $conn,
                 "UPDATE projects SET status = ?, reviewed_by = ?, review_comments = ?, reviewed_at = NOW() WHERE id = ?"
             );
             mysqli_stmt_bind_param($stmt, "sisi", $decision, $reviewerId, $comments, $projectId);
@@ -423,7 +433,8 @@ switch ($action) {
             redirectWith('messages.php', 'error', 'Recipient not found');
         }
 
-        $stmt = mysqli_prepare($conn, 
+        $stmt = mysqli_prepare(
+            $conn,
             "INSERT INTO messages (sender_id, recipient_id, subject, message) VALUES (?, ?, ?, ?)"
         );
         $recipientId = $recipient['id'];
@@ -456,7 +467,8 @@ switch ($action) {
             redirectWith('announcements.php', 'error', 'Title and message are required');
         }
 
-        $stmt = mysqli_prepare($conn, 
+        $stmt = mysqli_prepare(
+            $conn,
             "INSERT INTO announcements (title, message, author_id, target_role, is_featured) VALUES (?, ?, ?, ?, ?)"
         );
         mysqli_stmt_bind_param($stmt, "ssisi", $title, $message, $authorId, $targetRole, $isFeatured);
@@ -509,7 +521,8 @@ switch ($action) {
             redirectWith('schedule.php', 'error', 'Title and date are required');
         }
 
-        $stmt = mysqli_prepare($conn, 
+        $stmt = mysqli_prepare(
+            $conn,
             "INSERT INTO schedule (title, description, event_date, event_type, created_by) VALUES (?, ?, ?, ?, ?)"
         );
         mysqli_stmt_bind_param($stmt, "ssssi", $title, $description, $eventDate, $eventType, $createdBy);
@@ -545,6 +558,33 @@ switch ($action) {
         break;
 
     // ==========================================
+    // JUDGING: Score project
+    // ==========================================
+    case 'score_project':
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['admin', 'studentaffairs', 'departmentcoordinator'])) {
+            redirectWith('login.php', 'error', 'Unauthorized');
+        }
+
+        $projectId = intval($_POST['project_id'] ?? 0);
+        $score = intval($_POST['score'] ?? 0);
+
+        if ($score < 0 || $score > 100) {
+            redirectWith('judging.php', 'error', 'Invalid score');
+        }
+
+        $stmt = mysqli_prepare($conn, "UPDATE projects SET score = ? WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "ii", $score, $projectId);
+
+        if (mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_close($stmt);
+            redirectWith('judging.php', 'success', 'Score updated successfully');
+        } else {
+            mysqli_stmt_close($stmt);
+            redirectWith('judging.php', 'error', 'Failed to update score');
+        }
+        break;
+
+    // ==========================================
     // ADMIN: Add user
     // ==========================================
     case 'add_user':
@@ -573,7 +613,8 @@ switch ($action) {
         }
         mysqli_stmt_close($checkStmt);
 
-        $stmt = mysqli_prepare($conn, 
+        $stmt = mysqli_prepare(
+            $conn,
             "INSERT INTO users (name, username, email, password, role, department) VALUES (?, ?, ?, ?, ?, ?)"
         );
         mysqli_stmt_bind_param($stmt, "ssssss", $name, $username, $email, $password, $role, $department);
@@ -598,7 +639,7 @@ switch ($action) {
         $deleteUserId = intval($_POST['user_id'] ?? 0);
 
         // Prevent self-deletion
-        if ($deleteUserId === (int)$_SESSION['user_id']) {
+        if ($deleteUserId === (int) $_SESSION['user_id']) {
             redirectWith('users.php', 'error', 'You cannot delete your own account');
         }
 
@@ -756,7 +797,8 @@ switch ($action) {
         // Generate unique team code
         $teamCode = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
 
-        $stmt = mysqli_prepare($conn, 
+        $stmt = mysqli_prepare(
+            $conn,
             "INSERT INTO teams (team_name, description, team_code, leader_id, department) VALUES (?, ?, ?, ?, ?)"
         );
         mysqli_stmt_bind_param($stmt, "sssis", $teamName, $description, $teamCode, $leaderId, $department);
@@ -766,7 +808,8 @@ switch ($action) {
             mysqli_stmt_close($stmt);
 
             // Add leader as team member
-            $memberStmt = mysqli_prepare($conn, 
+            $memberStmt = mysqli_prepare(
+                $conn,
                 "INSERT INTO team_members (team_id, user_id, role) VALUES (?, ?, 'leader')"
             );
             mysqli_stmt_bind_param($memberStmt, "ii", $teamId, $leaderId);
@@ -867,7 +910,7 @@ switch ($action) {
         $teamInfo = mysqli_fetch_assoc(mysqli_stmt_get_result($leaderCheck));
         mysqli_stmt_close($leaderCheck);
 
-        if ($teamInfo && (int)$teamInfo['leader_id'] === (int)$userId) {
+        if ($teamInfo && (int) $teamInfo['leader_id'] === (int) $userId) {
             redirectWith('myTeam.php', 'error', 'Team leader cannot leave. Delete the team instead.');
         }
 
@@ -906,7 +949,7 @@ switch ($action) {
         $teamInfo = mysqli_fetch_assoc(mysqli_stmt_get_result($leaderCheck));
         mysqli_stmt_close($leaderCheck);
 
-        if (!$teamInfo || (int)$teamInfo['leader_id'] !== (int)$userId) {
+        if (!$teamInfo || (int) $teamInfo['leader_id'] !== (int) $userId) {
             $role = $_SESSION['role'] ?? '';
             if (!in_array($role, ['admin', 'studentaffairs'])) {
                 redirectWith('myTeam.php', 'error', 'Only the team leader or admin can delete the team');
@@ -951,7 +994,7 @@ switch ($action) {
         $teamInfo = mysqli_fetch_assoc(mysqli_stmt_get_result($leaderCheck));
         mysqli_stmt_close($leaderCheck);
 
-        if (!$teamInfo || (int)$teamInfo['leader_id'] !== (int)$leaderId) {
+        if (!$teamInfo || (int) $teamInfo['leader_id'] !== (int) $leaderId) {
             redirectWith('myTeam.php', 'error', 'Only the team leader can remove members');
         }
 
@@ -1003,7 +1046,8 @@ switch ($action) {
         mysqli_stmt_close($checkStmt);
 
         $role = 'departmentcoordinator';
-        $stmt = mysqli_prepare($conn,
+        $stmt = mysqli_prepare(
+            $conn,
             "INSERT INTO users (name, username, email, password, department, year, reg_no, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
         mysqli_stmt_bind_param($stmt, 'sssssssss', $name, $username, $email, $password, $department, $year, $regNo, $role, $status);
@@ -1032,7 +1076,8 @@ switch ($action) {
             redirectWith('coordinators.php', 'error', 'Department is required');
         }
 
-        $stmt = mysqli_prepare($conn, 
+        $stmt = mysqli_prepare(
+            $conn,
             "UPDATE users SET role = 'departmentcoordinator', department = ? WHERE id = ?"
         );
         mysqli_stmt_bind_param($stmt, "si", $department, $userId);
@@ -1300,6 +1345,112 @@ switch ($action) {
             mysqli_stmt_close($cancelStmt);
             redirectWith('myTeam.php', 'error', 'Could not cancel invitation');
         }
+        break;
+
+    // ==========================================
+    // EXPORT: Students List CSV
+    // ==========================================
+    case 'export_students':
+        if (!isset($_SESSION['user_id'])) {
+            redirectWith('login.php', 'error', 'Please login first');
+        }
+
+        $department = $_SESSION['department'] ?? '';
+        $isFE = (strtoupper($department) === 'FE');
+        $isMbaOrMca = in_array(strtoupper($department), ['MBA', 'MCA']);
+
+        // Multi-department support Logic (Inlined)
+        $deptFilter = [];
+        if (strpos($department, 'AIML') !== false || strpos($department, 'AIDS') !== false) {
+            $deptFilter = [
+                'placeholders' => "'AIML','AIDS'",
+                'types' => "ss",
+                'values' => ["AIML", "AIDS"]
+            ];
+        } else {
+            $deptFilter = [
+                'placeholders' => "?",
+                'types' => "s",
+                'values' => [$department]
+            ];
+        }
+
+        $dp = $deptFilter['placeholders'];
+        $dt = $deptFilter['types'];
+        $dv = $deptFilter['values'];
+
+        // Build Query
+        if ($isFE) {
+            $where = "(department NOT IN ('MBA', 'MCA') AND year = 'I')";
+            $types = "";
+            $params = [];
+
+            $sql = "SELECT u.name, u.email, u.year, u.status, u.created_at,
+                    (SELECT COUNT(*) FROM projects WHERE student_id = u.id) AS project_count
+                    FROM users u
+                    WHERE $where AND u.role = 'student'
+                    ORDER BY u.name ASC";
+
+        } elseif ($isMbaOrMca) {
+            $sql = "SELECT u.name, u.email, u.year, u.status, u.created_at,
+                    (SELECT COUNT(*) FROM projects WHERE student_id = u.id) AS project_count
+                    FROM users u
+                    WHERE u.department IN ($dp) AND u.role = 'student'
+                    ORDER BY u.name ASC";
+            $params = $dv;
+            $types = $dt;
+        } else {
+            // Exclude first years for other depts
+            $where = "u.department IN ($dp) AND u.role = 'student' AND u.year != 'I'";
+            $params = $dv;
+            $types = $dt;
+
+            $sql = "SELECT u.name, u.email, u.year, u.status, u.created_at,
+                    (SELECT COUNT(*) FROM projects WHERE student_id = u.id) AS project_count
+                    FROM users u
+                    WHERE $where
+                    ORDER BY u.name ASC";
+        }
+
+        // Execute
+        $stmt = $conn->prepare($sql);
+        if (!empty($types)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        // Generate CSV
+        $filename = "students_" . strtolower(str_replace(' ', '_', $department)) . "_" . date('Y-m-d') . ".csv";
+
+        // Clear output buffer to avoid any previous output corrupting the CSV
+        if (ob_get_level())
+            ob_end_clean();
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $output = fopen('php://output', 'w');
+
+        // Headers
+        fputcsv($output, ['Student Name', 'Email', 'Year', 'Status', 'Registered Date', 'Projects Submitted']);
+
+        while ($row = $result->fetch_assoc()) {
+            fputcsv($output, [
+                $row['name'],
+                $row['email'],
+                $row['year'] ?? '-',
+                ucfirst($row['status']),
+                date('Y-m-d', strtotime($row['created_at'])),
+                $row['project_count']
+            ]);
+        }
+
+        fclose($output);
+        $stmt->close();
+        exit();
         break;
 
     default:

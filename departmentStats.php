@@ -156,80 +156,44 @@ foreach ($statusBreakdown as $row) {
                 <div class="analytics-charts">
                     <div class="chart-card">
                         <h3>Projects by Category</h3>
-                        <div class="chart-data">
-                            <?php if (empty($categoryBreakdown)): ?>
-                                <div class="chart-placeholder">
-                                    <i class="ri-pie-chart-line"></i>
-                                    <p>No categories yet</p>
-                                </div>
-                            <?php else: ?>
-                                <?php
-                                $maxCat = max(array_column($categoryBreakdown, 'cnt'));
-                                foreach ($categoryBreakdown as $cat):
-                                    $pct = $maxCat > 0 ? round(($cat['cnt'] / $maxCat) * 100) : 0;
-                                    ?>
-                                    <div style="margin-bottom:8px;">
-                                        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                                            <span
-                                                style="font-size:0.9rem;"><?php echo htmlspecialchars($cat['category'] ?: 'Uncategorized'); ?></span>
-                                            <span style="font-weight:600;"><?php echo $cat['cnt']; ?></span>
-                                        </div>
-                                        <div style="background:#e9ecef;border-radius:4px;height:8px;">
-                                            <div
-                                                style="background:var(--primary-color, #4361ee);height:100%;border-radius:4px;width:<?php echo $pct; ?>%;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="categoryChart"></canvas>
                         </div>
                     </div>
 
                     <div class="chart-card">
-                        <h3>Submissions This Month</h3>
-                        <div class="chart-data"
-                            style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+                        <h3>Submissions Overview</h3>
+                        <div
+                            style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;">
                             <i class="ri-line-chart-line"
-                                style="font-size:2rem;color:var(--primary-color, #4361ee);margin-bottom:8px;"></i>
-                            <p style="font-size:2rem;font-weight:700;margin:0;"><?php echo $totalProjects; ?></p>
-                            <p style="color:#6c757d;margin:4px 0 0;">Total submissions in department</p>
+                                style="font-size:3rem;color:var(--primary);margin-bottom:1rem;"></i>
+                            <span
+                                style="font-size:3.5rem;font-weight:800;color:var(--text-main);line-height:1;"><?php echo $totalProjects; ?></span>
+                            <span style="color:var(--text-muted);font-size:1rem;margin-top:0.5rem;">Total
+                                Submissions</span>
                         </div>
                     </div>
 
                     <div class="chart-card">
-                        <h3>Approval Rate</h3>
-                        <div class="chart-data" style="padding:15px;">
-                            <div
-                                style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #e9ecef;">
-                                <span style="display:flex;align-items:center;gap:8px;"><span
-                                        style="width:12px;height:12px;border-radius:50%;background:#2ecc71;display:inline-block;"></span>
-                                    Approved</span>
-                                <strong><?php echo $approvedCount; ?></strong>
-                            </div>
-                            <div
-                                style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #e9ecef;">
-                                <span style="display:flex;align-items:center;gap:8px;"><span
-                                        style="width:12px;height:12px;border-radius:50%;background:#f39c12;display:inline-block;"></span>
-                                    Pending</span>
-                                <strong><?php echo $pendingCount; ?></strong>
-                            </div>
-                            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
-                                <span style="display:flex;align-items:center;gap:8px;"><span
-                                        style="width:12px;height:12px;border-radius:50%;background:#e74c3c;display:inline-block;"></span>
-                                    Rejected</span>
-                                <strong><?php echo $rejectedCount; ?></strong>
-                            </div>
+                        <h3>Approval Distribution</h3>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="statusChart"></canvas>
                         </div>
                     </div>
 
                     <div class="chart-card">
-                        <h3>Student Participation</h3>
-                        <div class="chart-data"
-                            style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
-                            <i class="ri-bar-chart-line" style="font-size:2rem;color:#8e44ad;margin-bottom:8px;"></i>
-                            <p style="font-size:2rem;font-weight:700;margin:0;"><?php echo $totalStudents; ?></p>
-                            <p style="color:#6c757d;margin:4px 0 0;">Students across <?php echo $totalTeams; ?> teams
-                            </p>
+                        <h3>Student Engagement</h3>
+                        <div
+                            style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;">
+                            <i class="ri-group-line" style="font-size:3rem;color:#8b5cf6;margin-bottom:1rem;"></i>
+                            <span
+                                style="font-size:3.5rem;font-weight:800;color:var(--text-main);line-height:1;"><?php echo $totalStudents; ?></span>
+                            <span style="color:var(--text-muted);font-size:1rem;margin-top:0.5rem;">Active
+                                Students</span>
+                            <span
+                                style="background:#f3f4f6;padding:0.25rem 0.75rem;border-radius:20px;font-size:0.8rem;color:#6b7280;margin-top:1rem;">
+                                Across <?php echo $totalTeams; ?> Teams
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -238,6 +202,101 @@ foreach ($statusBreakdown as $row) {
     </div>
 
     <script src="assets/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Prepare Data
+        const categoryData = <?php echo json_encode($categoryBreakdown); ?>;
+        const statusData = <?php echo json_encode($statusBreakdown); ?>;
+
+        // Process Category Data
+        const catLabels = categoryData.map(c => c.category ? c.category.charAt(0).toUpperCase() + c.category.slice(1) : 'Uncategorized');
+        const catCounts = categoryData.map(c => c.cnt);
+
+        // Process Status Data
+        const statusMap = { 'approved': 0, 'pending': 0, 'rejected': 0 };
+        statusData.forEach(s => { if (statusMap.hasOwnProperty(s.status)) statusMap[s.status] = s.cnt; });
+
+        // Category Chart
+        const ctxCat = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctxCat, {
+            type: 'bar', // or 'pie'
+            data: {
+                labels: catLabels.length ? catLabels : ['No Data'],
+                datasets: [{
+                    label: 'Projects',
+                    data: catCounts.length ? catCounts : [0],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(139, 92, 246, 0.7)',
+                        'rgba(236, 72, 153, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(16, 185, 129)',
+                        'rgb(245, 158, 11)',
+                        'rgb(139, 92, 246)',
+                        'rgb(236, 72, 153)'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { stepSize: 1 }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Status Chart
+        const ctxStat = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctxStat, {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Pending', 'Rejected'],
+                datasets: [{
+                    data: [statusMap.approved, statusMap.pending, statusMap.rejected],
+                    backgroundColor: [
+                        '#22c55e', // Green
+                        '#f59e0b', // Amber
+                        '#ef4444'  // Red
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 20 }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    </script>
 </body>
 
 </html>

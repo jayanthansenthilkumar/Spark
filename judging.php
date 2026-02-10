@@ -170,9 +170,34 @@ unset($_SESSION['flash_message'], $_SESSION['flash_type'], $_SESSION['success'],
             Swal.fire({
                 title: 'Score: ' + title,
                 html: `
-                    <div style="text-align:left;">
-                        <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:0.3rem;">Score (0-100)</label>
-                        <input id="swal-score" type="number" class="swal2-input" min="0" max="100" value="${currentScore > 0 ? currentScore : ''}" placeholder="Enter score" style="margin:0;width:100%;box-sizing:border-box;">
+                    <div style="text-align:left; font-size: 0.9rem;">
+                        <p style="margin-bottom:1rem;color:#666;font-size:0.85rem;">Enter scores for each category below:</p>
+                        
+                        <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <label>Innovation <span style="color:#999;font-size:0.8rem;">(Max 25)</span></label>
+                            <input id="score-innovation" type="number" class="swal2-input score-input" min="0" max="25" placeholder="0" style="width:80px; margin:0; height:36px; padding:0 10px;">
+                        </div>
+                        <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <label>Technical Complexity <span style="color:#999;font-size:0.8rem;">(Max 25)</span></label>
+                            <input id="score-technical" type="number" class="swal2-input score-input" min="0" max="25" placeholder="0" style="width:80px; margin:0; height:36px; padding:0 10px;">
+                        </div>
+                        <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <label>Practicality <span style="color:#999;font-size:0.8rem;">(Max 20)</span></label>
+                            <input id="score-practicality" type="number" class="swal2-input score-input" min="0" max="20" placeholder="0" style="width:80px; margin:0; height:36px; padding:0 10px;">
+                        </div>
+                        <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <label>Presentation <span style="color:#999;font-size:0.8rem;">(Max 15)</span></label>
+                            <input id="score-presentation" type="number" class="swal2-input score-input" min="0" max="15" placeholder="0" style="width:80px; margin:0; height:36px; padding:0 10px;">
+                        </div>
+                        <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <label>Documentation <span style="color:#999;font-size:0.8rem;">(Max 15)</span></label>
+                            <input id="score-documentation" type="number" class="swal2-input score-input" min="0" max="15" placeholder="0" style="width:80px; margin:0; height:36px; padding:0 10px;">
+                        </div>
+
+                        <div style="margin-top:15px; padding-top:10px; border-top:1px solid #eee; display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; color:var(--primary);">
+                            <span>Total Score:</span>
+                            <span><span id="total-score-display">0</span>/100</span>
+                        </div>
                     </div>
                 `,
                 confirmButtonText: '<i class="ri-star-line"></i> Submit Score',
@@ -180,13 +205,48 @@ unset($_SESSION['flash_message'], $_SESSION['flash_type'], $_SESSION['success'],
                 showCancelButton: true,
                 cancelButtonColor: '#6b7280',
                 focusConfirm: false,
-                preConfirm: () => {
-                    const score = parseInt(document.getElementById('swal-score').value);
-                    if (isNaN(score) || score < 0 || score > 100) {
-                        Swal.showValidationMessage('Score must be between 0 and 100');
-                        return false;
+                didOpen: () => {
+                    const inputs = document.querySelectorAll('.score-input');
+                    const totalDisplay = document.getElementById('total-score-display');
+
+                    function calculateTotal() {
+                        let total = 0;
+                        inputs.forEach(input => {
+                            let val = parseInt(input.value) || 0;
+                            // Ensure strictly non-negative for calc, but max check is done on validation to avoid annoying auto-correction
+                            if (val < 0) val = 0;
+                            total += val;
+                        });
+                        totalDisplay.textContent = total;
+                        if (total > 100) totalDisplay.style.color = '#ef4444'; // Red if over 100
+                        else totalDisplay.style.color = 'inherit';
                     }
-                    return score;
+
+                    inputs.forEach(input => input.addEventListener('input', calculateTotal));
+                },
+                preConfirm: () => {
+                    const inputs = document.querySelectorAll('.score-input');
+                    let total = 0;
+                    let valid = true;
+
+                    inputs.forEach(input => {
+                        let val = parseInt(input.value);
+                        let max = parseInt(input.getAttribute('max'));
+                        let label = input.previousElementSibling.textContent.split('(')[0].trim();
+
+                        if (isNaN(val) || val < 0) {
+                            val = 0; // Treat empty/invalid as 0 or strictly require? lets allow partial fill 0
+                        }
+
+                        if (val > max) {
+                            Swal.showValidationMessage(`${label} score cannot exceed ${max}`);
+                            valid = false;
+                        }
+                        total += val;
+                    });
+
+                    if (!valid) return false;
+                    return total;
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
