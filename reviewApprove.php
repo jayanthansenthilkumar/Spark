@@ -193,92 +193,93 @@ unset($_SESSION['success'], $_SESSION['error']);
                     <?php endif; ?>
                 </div>
 
-                <!-- Review Modal Template -->
-                <div class="review-modal" id="reviewModal" style="display: none;">
-                    <div class="modal-content large">
-                        <div class="modal-header">
-                            <h3>Review Project</h3>
-                            <button class="btn-icon" onclick="closeReviewModal()">
-                                <i class="ri-close-line"></i>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="project-details" id="modalProjectDetails">
-                                <h4 id="modalProjectTitle">Project Title</h4>
-                                <p id="modalProjectDesc">Project description will appear here...</p>
-                                <div class="project-meta" style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                                    <p><strong>Student:</strong> <span id="modalStudentName"></span></p>
-                                    <p><strong>Category:</strong> <span id="modalCategory"></span></p>
-                                    <p><strong>Department:</strong> <span id="modalDepartment"></span></p>
-                                    <p><strong>Team Members:</strong> <span id="modalTeam"></span></p>
-                                    <p id="modalGithubWrap" style="display:none;"><strong>GitHub:</strong> <a id="modalGithub" href="#" target="_blank"></a></p>
-                                </div>
-                            </div>
-                            <form action="sparkBackend.php" method="POST">
-                                <input type="hidden" name="action" value="review_project">
-                                <input type="hidden" name="project_id" id="modalProjectId" value="">
-                                
-                                <div class="form-group">
-                                    <label>Review Decision</label>
-                                    <div class="decision-buttons">
-                                        <label class="decision-option approve">
-                                            <input type="radio" name="decision" value="approved" required>
-                                            <i class="ri-checkbox-circle-line"></i>
-                                            <span>Approve</span>
-                                        </label>
-                                        <label class="decision-option reject">
-                                            <input type="radio" name="decision" value="rejected" required>
-                                            <i class="ri-close-circle-line"></i>
-                                            <span>Reject</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="reviewComments">Comments</label>
-                                    <textarea id="reviewComments" name="comments" rows="4" placeholder="Add your review comments..."></textarea>
-                                </div>
-
-                                <div class="modal-actions">
-                                    <button type="button" class="btn-secondary" onclick="closeReviewModal()">Cancel</button>
-                                    <button type="submit" class="btn-primary">Submit Review</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                <!-- Review modal handled via SweetAlert -->
             </div>
         </main>
     </div>
 
     <script src="assets/js/script.js"></script>
     <script>
-        function openReviewModal(projectId, title, description, student, category, department, github, team) {
-            document.getElementById('modalProjectId').value = projectId;
-            document.getElementById('modalProjectTitle').textContent = title;
-            document.getElementById('modalProjectDesc').textContent = description || 'No description provided.';
-            document.getElementById('modalStudentName').textContent = student;
-            document.getElementById('modalCategory').textContent = category;
-            document.getElementById('modalDepartment').textContent = department;
-            document.getElementById('modalTeam').textContent = team || 'N/A';
-            if (github) {
-                document.getElementById('modalGithub').href = github;
-                document.getElementById('modalGithub').textContent = github;
-                document.getElementById('modalGithubWrap').style.display = 'block';
-            } else {
-                document.getElementById('modalGithubWrap').style.display = 'none';
+    function openReviewModal(projectId, title, description, student, category, department, github, team) {
+        const githubHtml = github
+            ? `<p><strong>GitHub:</strong> <a href="${escapeHtml(github)}" target="_blank" style="color:#2563eb;">${escapeHtml(github)}</a></p>`
+            : '';
+
+        Swal.fire({
+            title: 'Review Project',
+            html: `
+                <div style="text-align:left;">
+                    <div style="background:#f8fafc;border-radius:8px;padding:1rem;margin-bottom:1rem;border:1px solid #e2e8f0;">
+                        <h4 style="margin:0 0 0.5rem 0;color:#1e293b;">${escapeHtml(title)}</h4>
+                        <p style="margin:0 0 0.75rem 0;color:#475569;font-size:0.9rem;">${escapeHtml(description || 'No description provided.')}</p>
+                        <div style="font-size:0.85rem;color:#64748b;line-height:1.8;">
+                            <p style="margin:0;"><strong>Student:</strong> ${escapeHtml(student)}</p>
+                            <p style="margin:0;"><strong>Category:</strong> ${escapeHtml(category)}</p>
+                            <p style="margin:0;"><strong>Department:</strong> ${escapeHtml(department)}</p>
+                            <p style="margin:0;"><strong>Team:</strong> ${escapeHtml(team || 'N/A')}</p>
+                            ${githubHtml}
+                        </div>
+                    </div>
+                    <div style="margin-bottom:0.75rem;">
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.5rem;">Decision *</label>
+                        <div style="display:flex;gap:1rem;">
+                            <label style="display:flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;border:2px solid #22c55e;border-radius:8px;cursor:pointer;flex:1;justify-content:center;transition:all 0.2s;" id="swal-approve-label">
+                                <input type="radio" name="swal-decision" value="approved" id="swal-approve-radio" style="cursor:pointer;" onchange="this.closest('.swal2-html-container').querySelector('#swal-reject-label').style.background='transparent'; this.closest('label').style.background='#dcfce7';">
+                                <i class="ri-checkbox-circle-line" style="color:#22c55e;"></i> <span style="font-weight:500;">Approve</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;border:2px solid #ef4444;border-radius:8px;cursor:pointer;flex:1;justify-content:center;transition:all 0.2s;" id="swal-reject-label">
+                                <input type="radio" name="swal-decision" value="rejected" id="swal-reject-radio" style="cursor:pointer;" onchange="this.closest('.swal2-html-container').querySelector('#swal-approve-label').style.background='transparent'; this.closest('label').style.background='#fef2f2';">
+                                <i class="ri-close-circle-line" style="color:#ef4444;"></i> <span style="font-weight:500;">Reject</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Comments</label>
+                        <textarea id="swal-comments" class="swal2-textarea" rows="3" placeholder="Add your review comments..." style="margin:0;width:100%;box-sizing:border-box;"></textarea>
+                    </div>
+                </div>
+            `,
+            confirmButtonText: '<i class="ri-check-double-line"></i> Submit Review',
+            confirmButtonColor: '#2563eb',
+            showCancelButton: true,
+            cancelButtonColor: '#6b7280',
+            width: '600px',
+            focusConfirm: false,
+            preConfirm: () => {
+                const decision = document.querySelector('input[name="swal-decision"]:checked');
+                if (!decision) {
+                    Swal.showValidationMessage('Please select Approve or Reject');
+                    return false;
+                }
+                return {
+                    decision: decision.value,
+                    comments: document.getElementById('swal-comments').value.trim()
+                };
             }
-            // Reset form
-            document.getElementById('reviewComments').value = '';
-            var radios = document.querySelectorAll('input[name="decision"]');
-            radios.forEach(function(r) { r.checked = false; });
-            document.getElementById('reviewModal').style.display = 'flex';
-        }
-        function closeReviewModal() {
-            document.getElementById('reviewModal').style.display = 'none';
-        }
-    </script>
-    <script>
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const d = result.value;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="review_project">
+                    <input type="hidden" name="project_id" value="${projectId}">
+                    <input type="hidden" name="decision" value="${escapeHtml(d.decision)}">
+                    <input type="hidden" name="comments" value="${escapeHtml(d.comments)}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     <?php if ($flashSuccess): ?>
     Swal.fire({ icon: 'success', title: 'Success!', text: '<?php echo addslashes($flashSuccess); ?>', confirmButtonColor: '#2563eb', timer: 3000, timerProgressBar: true });
     <?php endif; ?>

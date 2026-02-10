@@ -32,8 +32,9 @@ $sql .= " ORDER BY p.created_at DESC";
 $pendingProjects = $conn->query($sql);
 
 // Flash messages
-$flash = $_SESSION['flash'] ?? null;
-unset($_SESSION['flash']);
+$successMsg = $_SESSION['success'] ?? '';
+$errorMsg = $_SESSION['error'] ?? '';
+unset($_SESSION['success'], $_SESSION['error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -144,16 +145,14 @@ unset($_SESSION['flash']);
                                         <td><?php echo htmlspecialchars($project['category'] ?? '-'); ?></td>
                                         <td><?php echo date('M d, Y', strtotime($project['created_at'])); ?></td>
                                         <td>
-                                            <form method="POST" action="sparkBackend.php" style="display:inline-flex;gap:6px;">
-                                                <input type="hidden" name="action" value="review_project">
-                                                <input type="hidden" name="project_id" value="<?php echo $project['id']; ?>">
-                                                <button type="submit" name="decision" value="approved" class="btn btn-sm btn-success" title="Approve">
+                                            <div style="display:flex;gap:6px;">
+                                                <button type="button" class="btn btn-sm btn-success" title="Approve" onclick="confirmReview(<?php echo $project['id']; ?>, 'approved', '<?php echo addslashes(htmlspecialchars($project['title'])); ?>')">
                                                     <i class="ri-checkbox-circle-line"></i> Approve
                                                 </button>
-                                                <button type="submit" name="decision" value="rejected" class="btn btn-sm btn-danger" title="Reject">
+                                                <button type="button" class="btn btn-sm btn-danger" title="Reject" onclick="confirmReview(<?php echo $project['id']; ?>, 'rejected', '<?php echo addslashes(htmlspecialchars($project['title'])); ?>')">
                                                     <i class="ri-close-circle-line"></i> Reject
                                                 </button>
-                                            </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
@@ -173,9 +172,53 @@ unset($_SESSION['flash']);
 
     <script src="assets/js/script.js"></script>
     <script>
-    <?php if ($flash): ?>
-    Swal.fire({ icon: '<?php echo $flash["type"] === "success" ? "success" : "error"; ?>', title: '<?php echo $flash["type"] === "success" ? "Success!" : "Oops!"; ?>', text: '<?php echo addslashes($flash["message"]); ?>', confirmButtonColor: '#2563eb'<?php if ($flash["type"] === "success"): ?>, timer: 3000, timerProgressBar: true<?php endif; ?> });
+    <?php if ($successMsg): ?>
+    Swal.fire({ icon: 'success', title: 'Success!', text: '<?php echo addslashes($successMsg); ?>', confirmButtonColor: '#2563eb', timer: 3000, timerProgressBar: true });
     <?php endif; ?>
+    <?php if ($errorMsg): ?>
+    Swal.fire({ icon: 'error', title: 'Oops!', text: '<?php echo addslashes($errorMsg); ?>', confirmButtonColor: '#2563eb' });
+    <?php endif; ?>
+
+    function confirmReview(projectId, decision, title) {
+        const isApprove = (decision === 'approved');
+        Swal.fire({
+            title: isApprove ? 'Approve Project?' : 'Reject Project?',
+            html: `<p>Are you sure you want to ${decision === 'approved' ? 'approve' : 'reject'} <strong>${title}</strong>?</p>
+                   <div style="margin-top:1rem;text-align:left;">
+                       <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:0.3rem;">Comments (optional)</label>
+                       <textarea id="swal-comments" class="swal2-textarea" placeholder="Add review comments..." style="margin:0;width:100%;box-sizing:border-box;"></textarea>
+                   </div>`,
+            icon: isApprove ? 'question' : 'warning',
+            showCancelButton: true,
+            confirmButtonColor: isApprove ? '#10b981' : '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: isApprove ? '<i class="ri-checkbox-circle-line"></i> Approve' : '<i class="ri-close-circle-line"></i> Reject',
+            focusConfirm: false,
+            preConfirm: () => {
+                return document.getElementById('swal-comments').value.trim();
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="review_project">
+                    <input type="hidden" name="project_id" value="${projectId}">
+                    <input type="hidden" name="decision" value="${decision}">
+                    <input type="hidden" name="comments" value="${escapeHtml(result.value || '')}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
     </script>
 </body>
 

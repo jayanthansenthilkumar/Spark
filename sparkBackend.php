@@ -166,6 +166,17 @@ switch ($action) {
         }
         $teamId = $teamRow['id'];
 
+        // Only team leader can submit projects
+        $leaderCheckStmt = mysqli_prepare($conn, "SELECT leader_id FROM teams WHERE id = ?");
+        mysqli_stmt_bind_param($leaderCheckStmt, 'i', $teamId);
+        mysqli_stmt_execute($leaderCheckStmt);
+        $leaderRow = mysqli_fetch_assoc(mysqli_stmt_get_result($leaderCheckStmt));
+        mysqli_stmt_close($leaderCheckStmt);
+
+        if (!$leaderRow || (int)$leaderRow['leader_id'] !== (int)$studentId) {
+            redirectWith('myProjects.php', 'error', 'Only the team leader can submit projects.');
+        }
+
         // Handle file upload
         $filePath = null;
         if (isset($_FILES['projectFile']) && $_FILES['projectFile']['error'] === UPLOAD_ERR_OK) {
@@ -216,8 +227,19 @@ switch ($action) {
         $userId = $_SESSION['user_id'];
         $role = $_SESSION['role'];
 
-        // Students can only delete their own pending projects
+        // Students: only team leader can delete pending projects
         if ($role === 'student') {
+            // Check if user is team leader
+            $leaderChk = mysqli_prepare($conn, "SELECT t.leader_id FROM projects p JOIN teams t ON p.team_id = t.id WHERE p.id = ?");
+            mysqli_stmt_bind_param($leaderChk, "i", $projectId);
+            mysqli_stmt_execute($leaderChk);
+            $lRow = mysqli_fetch_assoc(mysqli_stmt_get_result($leaderChk));
+            mysqli_stmt_close($leaderChk);
+
+            if (!$lRow || (int)$lRow['leader_id'] !== (int)$userId) {
+                redirectWith('myProjects.php', 'error', 'Only the team leader can delete projects.');
+            }
+
             $stmt = mysqli_prepare($conn, "DELETE FROM projects WHERE id = ? AND student_id = ? AND status = 'pending'");
             mysqli_stmt_bind_param($stmt, "ii", $projectId, $userId);
         } else {
@@ -800,7 +822,10 @@ switch ($action) {
 
             // Auto-close team if now full
             if ($memberCount + 1 >= $team['max_members']) {
-                mysqli_query($conn, "UPDATE teams SET status = 'closed' WHERE id = " . $team['id']);
+                $closeStmt = mysqli_prepare($conn, "UPDATE teams SET status = 'closed' WHERE id = ?");
+                mysqli_stmt_bind_param($closeStmt, "i", $team['id']);
+                mysqli_stmt_execute($closeStmt);
+                mysqli_stmt_close($closeStmt);
             }
 
             redirectWith('myTeam.php', 'success', 'Successfully joined team: ' . $team['team_name']);
@@ -838,7 +863,10 @@ switch ($action) {
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_close($stmt);
             // Reopen team if it was closed
-            mysqli_query($conn, "UPDATE teams SET status = 'open' WHERE id = $teamId");
+            $reopenStmt = mysqli_prepare($conn, "UPDATE teams SET status = 'open' WHERE id = ?");
+            mysqli_stmt_bind_param($reopenStmt, "i", $teamId);
+            mysqli_stmt_execute($reopenStmt);
+            mysqli_stmt_close($reopenStmt);
             redirectWith('myTeam.php', 'success', 'You have left the team');
         } else {
             mysqli_stmt_close($stmt);
@@ -872,7 +900,6 @@ switch ($action) {
         }
 
         // Delete team members first, then team
-        mysqli_prepare($conn, "DELETE FROM team_members WHERE team_id = ?");
         $delMembers = mysqli_prepare($conn, "DELETE FROM team_members WHERE team_id = ?");
         mysqli_stmt_bind_param($delMembers, "i", $teamId);
         mysqli_stmt_execute($delMembers);
@@ -919,7 +946,10 @@ switch ($action) {
 
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_close($stmt);
-            mysqli_query($conn, "UPDATE teams SET status = 'open' WHERE id = $teamId");
+            $reopenStmt = mysqli_prepare($conn, "UPDATE teams SET status = 'open' WHERE id = ?");
+            mysqli_stmt_bind_param($reopenStmt, "i", $teamId);
+            mysqli_stmt_execute($reopenStmt);
+            mysqli_stmt_close($reopenStmt);
             redirectWith('myTeam.php', 'success', 'Member removed from team');
         } else {
             mysqli_stmt_close($stmt);
@@ -1026,6 +1056,210 @@ switch ($action) {
         } else {
             mysqli_stmt_close($stmt);
             redirectWith('judging.php', 'error', 'Failed to submit score');
+        }
+        break;
+
+    // ==========================================
+    // TEAMS: Send invitation to a student (leader only)
+    // ==========================================
+    case 'send_invite':
+        if (!isset($_SESSION['user_id'])) {
+            redirectWith('login.php', 'error', 'Please login first');
+        }
+
+        $leaderId = $_SESSION['user_id'];
+        $invitedUserId = intval($_POST['invited_user_id'] ?? 0);
+
+        if (!$invitedUserId) {
+            redirectWith('myTeam.php', 'error', 'Please select a student to invite');
+        }
+
+        // Find the leader's team
+        $teamStmt = mysqli_prepare($conn, "SELECT id, max_members FROM teams WHERE leader_id = ?");
+        mysqli_stmt_bind_param($teamStmt, "i", $leaderId);
+        mysqli_stmt_execute($teamStmt);
+        $team = mysqli_fetch_assoc(mysqli_stmt_get_result($teamStmt));
+        mysqli_stmt_close($teamStmt);
+
+        if (!$team) {
+            redirectWith('myTeam.php', 'error', 'You are not a team leader');
+        }
+
+        $teamId = $team['id'];
+
+        // Check current member count vs max
+        $countStmt = mysqli_prepare($conn, "SELECT COUNT(*) as cnt FROM team_members WHERE team_id = ?");
+        mysqli_stmt_bind_param($countStmt, "i", $teamId);
+        mysqli_stmt_execute($countStmt);
+        $memberCount = mysqli_fetch_assoc(mysqli_stmt_get_result($countStmt))['cnt'];
+        mysqli_stmt_close($countStmt);
+
+        if ($memberCount >= $team['max_members']) {
+            redirectWith('myTeam.php', 'error', 'Team is already full');
+        }
+
+        // Check if invited user is already in a team
+        $inTeamStmt = mysqli_prepare($conn, "SELECT team_id FROM team_members WHERE user_id = ?");
+        mysqli_stmt_bind_param($inTeamStmt, "i", $invitedUserId);
+        mysqli_stmt_execute($inTeamStmt);
+        if (mysqli_fetch_assoc(mysqli_stmt_get_result($inTeamStmt))) {
+            mysqli_stmt_close($inTeamStmt);
+            redirectWith('myTeam.php', 'error', 'This student is already in a team');
+        }
+        mysqli_stmt_close($inTeamStmt);
+
+        // Check if invitation already pending
+        $existStmt = mysqli_prepare($conn, "SELECT id FROM team_invitations WHERE team_id = ? AND invited_user_id = ? AND status = 'pending'");
+        mysqli_stmt_bind_param($existStmt, "ii", $teamId, $invitedUserId);
+        mysqli_stmt_execute($existStmt);
+        if (mysqli_fetch_assoc(mysqli_stmt_get_result($existStmt))) {
+            mysqli_stmt_close($existStmt);
+            redirectWith('myTeam.php', 'error', 'Invitation already sent to this student');
+        }
+        mysqli_stmt_close($existStmt);
+
+        // Send invitation
+        $inviteStmt = mysqli_prepare($conn, "INSERT INTO team_invitations (team_id, invited_by, invited_user_id) VALUES (?, ?, ?)");
+        mysqli_stmt_bind_param($inviteStmt, "iii", $teamId, $leaderId, $invitedUserId);
+
+        if (mysqli_stmt_execute($inviteStmt)) {
+            mysqli_stmt_close($inviteStmt);
+            redirectWith('myTeam.php', 'success', 'Invitation sent successfully!');
+        } else {
+            mysqli_stmt_close($inviteStmt);
+            redirectWith('myTeam.php', 'error', 'Failed to send invitation');
+        }
+        break;
+
+    // ==========================================
+    // TEAMS: Accept invitation
+    // ==========================================
+    case 'accept_invite':
+        if (!isset($_SESSION['user_id'])) {
+            redirectWith('login.php', 'error', 'Please login first');
+        }
+
+        $userId = $_SESSION['user_id'];
+        $inviteId = intval($_POST['invite_id'] ?? 0);
+
+        // Get invitation details
+        $invStmt = mysqli_prepare($conn, "SELECT ti.*, t.max_members, t.team_name FROM team_invitations ti JOIN teams t ON ti.team_id = t.id WHERE ti.id = ? AND ti.invited_user_id = ? AND ti.status = 'pending'");
+        mysqli_stmt_bind_param($invStmt, "ii", $inviteId, $userId);
+        mysqli_stmt_execute($invStmt);
+        $invite = mysqli_fetch_assoc(mysqli_stmt_get_result($invStmt));
+        mysqli_stmt_close($invStmt);
+
+        if (!$invite) {
+            redirectWith('myTeam.php', 'error', 'Invalid or expired invitation');
+        }
+
+        // Check if user is already in a team
+        $inTeamStmt = mysqli_prepare($conn, "SELECT team_id FROM team_members WHERE user_id = ?");
+        mysqli_stmt_bind_param($inTeamStmt, "i", $userId);
+        mysqli_stmt_execute($inTeamStmt);
+        if (mysqli_fetch_assoc(mysqli_stmt_get_result($inTeamStmt))) {
+            mysqli_stmt_close($inTeamStmt);
+            // Decline this invite since user already in a team
+            $decStmt = mysqli_prepare($conn, "UPDATE team_invitations SET status = 'declined', responded_at = NOW() WHERE id = ?");
+            mysqli_stmt_bind_param($decStmt, "i", $inviteId);
+            mysqli_stmt_execute($decStmt);
+            mysqli_stmt_close($decStmt);
+            redirectWith('myTeam.php', 'error', 'You are already in a team');
+        }
+        mysqli_stmt_close($inTeamStmt);
+
+        // Check max members
+        $countStmt = mysqli_prepare($conn, "SELECT COUNT(*) as cnt FROM team_members WHERE team_id = ?");
+        mysqli_stmt_bind_param($countStmt, "i", $invite['team_id']);
+        mysqli_stmt_execute($countStmt);
+        $memberCount = mysqli_fetch_assoc(mysqli_stmt_get_result($countStmt))['cnt'];
+        mysqli_stmt_close($countStmt);
+
+        if ($memberCount >= $invite['max_members']) {
+            $decStmt = mysqli_prepare($conn, "UPDATE team_invitations SET status = 'declined', responded_at = NOW() WHERE id = ?");
+            mysqli_stmt_bind_param($decStmt, "i", $inviteId);
+            mysqli_stmt_execute($decStmt);
+            mysqli_stmt_close($decStmt);
+            redirectWith('myTeam.php', 'error', 'Team is now full. Invitation expired.');
+        }
+
+        // Add user to team
+        $joinStmt = mysqli_prepare($conn, "INSERT INTO team_members (team_id, user_id, role) VALUES (?, ?, 'member')");
+        mysqli_stmt_bind_param($joinStmt, "ii", $invite['team_id'], $userId);
+
+        if (mysqli_stmt_execute($joinStmt)) {
+            mysqli_stmt_close($joinStmt);
+
+            // Update invitation status
+            $upStmt = mysqli_prepare($conn, "UPDATE team_invitations SET status = 'accepted', responded_at = NOW() WHERE id = ?");
+            mysqli_stmt_bind_param($upStmt, "i", $inviteId);
+            mysqli_stmt_execute($upStmt);
+            mysqli_stmt_close($upStmt);
+
+            // Decline other pending invitations for this user
+            $decOthers = mysqli_prepare($conn, "UPDATE team_invitations SET status = 'declined', responded_at = NOW() WHERE invited_user_id = ? AND status = 'pending'");
+            mysqli_stmt_bind_param($decOthers, "i", $userId);
+            mysqli_stmt_execute($decOthers);
+            mysqli_stmt_close($decOthers);
+
+            // Auto-close team if full
+            if ($memberCount + 1 >= $invite['max_members']) {
+                $closeStmt = mysqli_prepare($conn, "UPDATE teams SET status = 'closed' WHERE id = ?");
+                mysqli_stmt_bind_param($closeStmt, "i", $invite['team_id']);
+                mysqli_stmt_execute($closeStmt);
+                mysqli_stmt_close($closeStmt);
+            }
+
+            redirectWith('myTeam.php', 'success', 'You have joined team: ' . $invite['team_name']);
+        } else {
+            mysqli_stmt_close($joinStmt);
+            redirectWith('myTeam.php', 'error', 'Failed to join team');
+        }
+        break;
+
+    // ==========================================
+    // TEAMS: Decline invitation
+    // ==========================================
+    case 'decline_invite':
+        if (!isset($_SESSION['user_id'])) {
+            redirectWith('login.php', 'error', 'Please login first');
+        }
+
+        $userId = $_SESSION['user_id'];
+        $inviteId = intval($_POST['invite_id'] ?? 0);
+
+        $decStmt = mysqli_prepare($conn, "UPDATE team_invitations SET status = 'declined', responded_at = NOW() WHERE id = ? AND invited_user_id = ? AND status = 'pending'");
+        mysqli_stmt_bind_param($decStmt, "ii", $inviteId, $userId);
+
+        if (mysqli_stmt_execute($decStmt) && mysqli_stmt_affected_rows($decStmt) > 0) {
+            mysqli_stmt_close($decStmt);
+            redirectWith('myTeam.php', 'success', 'Invitation declined');
+        } else {
+            mysqli_stmt_close($decStmt);
+            redirectWith('myTeam.php', 'error', 'Invalid or already responded invitation');
+        }
+        break;
+
+    // ==========================================
+    // TEAMS: Cancel invitation (leader only)
+    // ==========================================
+    case 'cancel_invite':
+        if (!isset($_SESSION['user_id'])) {
+            redirectWith('login.php', 'error', 'Please login first');
+        }
+
+        $leaderId = $_SESSION['user_id'];
+        $inviteId = intval($_POST['invite_id'] ?? 0);
+
+        $cancelStmt = mysqli_prepare($conn, "DELETE FROM team_invitations WHERE id = ? AND invited_by = ? AND status = 'pending'");
+        mysqli_stmt_bind_param($cancelStmt, "ii", $inviteId, $leaderId);
+
+        if (mysqli_stmt_execute($cancelStmt) && mysqli_stmt_affected_rows($cancelStmt) > 0) {
+            mysqli_stmt_close($cancelStmt);
+            redirectWith('myTeam.php', 'success', 'Invitation cancelled');
+        } else {
+            mysqli_stmt_close($cancelStmt);
+            redirectWith('myTeam.php', 'error', 'Could not cancel invitation');
         }
         break;
 

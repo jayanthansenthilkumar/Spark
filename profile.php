@@ -14,30 +14,36 @@ $year = $_SESSION['year'] ?? '';
 $regNo = $_SESSION['reg_no'] ?? '';
 $username = $_SESSION['username'] ?? '';
 
-// Query project counts
+// Check if user is in a team (for team-based project counts)
+$userTeamId = null;
+$teamStmt = $conn->prepare("SELECT team_id FROM team_members WHERE user_id = ?");
+$teamStmt->bind_param("i", $userId);
+$teamStmt->execute();
+$teamResult = $teamStmt->get_result();
+if ($teamRow = $teamResult->fetch_assoc()) {
+    $userTeamId = $teamRow['team_id'];
+}
+$teamStmt->close();
+
+// Query project counts (team-based if in a team, otherwise individual)
 $totalProjects = 0;
 $approvedProjects = 0;
 $pendingProjects = 0;
 
-$stmt = $conn->prepare("SELECT COUNT(*) as total FROM projects WHERE student_id = ?");
-$stmt->bind_param("i", $userId);
+if ($userTeamId) {
+    $stmt = $conn->prepare("SELECT status, COUNT(*) as cnt FROM projects WHERE team_id = ? GROUP BY status");
+    $stmt->bind_param("i", $userTeamId);
+} else {
+    $stmt = $conn->prepare("SELECT status, COUNT(*) as cnt FROM projects WHERE student_id = ? GROUP BY status");
+    $stmt->bind_param("i", $userId);
+}
 $stmt->execute();
 $result = $stmt->get_result();
-$totalProjects = $result->fetch_assoc()['total'] ?? 0;
-$stmt->close();
-
-$stmt = $conn->prepare("SELECT COUNT(*) as total FROM projects WHERE student_id = ? AND status = 'approved'");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$approvedProjects = $result->fetch_assoc()['total'] ?? 0;
-$stmt->close();
-
-$stmt = $conn->prepare("SELECT COUNT(*) as total FROM projects WHERE student_id = ? AND status = 'pending'");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$pendingProjects = $result->fetch_assoc()['total'] ?? 0;
+while ($row = $result->fetch_assoc()) {
+    $totalProjects += $row['cnt'];
+    if ($row['status'] === 'approved') $approvedProjects = $row['cnt'];
+    if ($row['status'] === 'pending') $pendingProjects = $row['cnt'];
+}
 $stmt->close();
 
 // Get user's joined date

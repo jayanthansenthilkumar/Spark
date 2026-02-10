@@ -10,12 +10,16 @@ $userRole = ucfirst($_SESSION['role'] ?? $_SESSION['user_role'] ?? 'User');
 $role = $_SESSION['role'];
 $canCreate = in_array($role, ['admin', 'studentaffairs']);
 
-// Fetch announcements for this user's role
+// Fetch announcements for this user's role using prepared statement
 $announcements = [];
-$result = mysqli_query($conn, "SELECT a.*, u.name as author_name FROM announcements a JOIN users u ON a.author_id = u.id WHERE a.target_role IN ('all', '$role') ORDER BY a.is_featured DESC, a.created_at DESC");
-while ($row = mysqli_fetch_assoc($result)) {
+$annStmt = mysqli_prepare($conn, "SELECT a.*, u.name as author_name FROM announcements a JOIN users u ON a.author_id = u.id WHERE a.target_role IN ('all', ?) ORDER BY a.is_featured DESC, a.created_at DESC");
+mysqli_stmt_bind_param($annStmt, "s", $role);
+mysqli_stmt_execute($annStmt);
+$annResult = mysqli_stmt_get_result($annStmt);
+while ($row = mysqli_fetch_assoc($annResult)) {
     $announcements[] = $row;
 }
+mysqli_stmt_close($annStmt);
 
 $successMsg = $_SESSION['success'] ?? '';
 $errorMsg = $_SESSION['error'] ?? '';
@@ -65,7 +69,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <?php if ($canCreate): ?>
                 <div class="content-header" style="margin-bottom:1.5rem;">
                     <h2>Announcements</h2>
-                    <button class="btn-primary" onclick="document.getElementById('announcementModal').style.display='flex'">
+                    <button class="btn-primary" onclick="showCreateAnnouncement()">
                         <i class="ri-add-line"></i> New Announcement
                     </button>
                 </div>
@@ -106,44 +110,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 </div>
 
                 <?php if ($canCreate): ?>
-                <!-- Create Announcement Modal -->
-                <div class="compose-modal" id="announcementModal" style="display:none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>New Announcement</h3>
-                            <button class="btn-icon" onclick="document.getElementById('announcementModal').style.display='none'"><i class="ri-close-line"></i></button>
-                        </div>
-                        <form action="sparkBackend.php" method="POST">
-                            <input type="hidden" name="action" value="create_announcement">
-                            <div class="form-group">
-                                <label>Title</label>
-                                <input type="text" name="announcementTitle" required placeholder="Announcement title">
-                            </div>
-                            <div class="form-group">
-                                <label>Message</label>
-                                <textarea name="announcementMessage" rows="5" required placeholder="Write your announcement..."></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Target Audience</label>
-                                <select name="targetRole">
-                                    <option value="all">All Users</option>
-                                    <option value="student">Students Only</option>
-                                    <option value="departmentcoordinator">Coordinators Only</option>
-                                    <option value="studentaffairs">Student Affairs Only</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label style="display:flex;align-items:center;gap:0.5rem;">
-                                    <input type="checkbox" name="isFeatured"> Mark as Featured
-                                </label>
-                            </div>
-                            <div class="modal-actions">
-                                <button type="button" class="btn-secondary" onclick="document.getElementById('announcementModal').style.display='none'">Cancel</button>
-                                <button type="submit" class="btn-primary">Post Announcement</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <!-- Announcements handled via SweetAlert -->
                 <?php endif; ?>
             </div>
         </main>
@@ -157,12 +124,77 @@ unset($_SESSION['success'], $_SESSION['error']);
     <?php if ($errorMsg): ?>
     Swal.fire({ icon: 'error', title: 'Oops!', text: '<?php echo addslashes($errorMsg); ?>', confirmButtonColor: '#2563eb' });
     <?php endif; ?>
+
+    function showCreateAnnouncement() {
+        Swal.fire({
+            title: 'New Announcement',
+            html: `
+                <div style="text-align:left;">
+                    <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:0.3rem;">Title *</label>
+                    <input id="swal-annTitle" class="swal2-input" placeholder="Announcement title" style="margin:0 0 1rem 0;width:100%;box-sizing:border-box;">
+                    <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:0.3rem;">Message *</label>
+                    <textarea id="swal-annMessage" class="swal2-textarea" placeholder="Write your announcement..." style="margin:0 0 1rem 0;width:100%;box-sizing:border-box;"></textarea>
+                    <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:0.3rem;">Target Audience</label>
+                    <select id="swal-annTarget" class="swal2-select" style="margin:0 0 1rem 0;width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">
+                        <option value="all">All Users</option>
+                        <option value="student">Students Only</option>
+                        <option value="departmentcoordinator">Coordinators Only</option>
+                        <option value="studentaffairs">Student Affairs Only</option>
+                    </select>
+                    <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;">
+                        <input type="checkbox" id="swal-annFeatured"> Mark as Featured
+                    </label>
+                </div>
+            `,
+            confirmButtonText: '<i class="ri-megaphone-line"></i> Post Announcement',
+            confirmButtonColor: '#2563eb',
+            showCancelButton: true,
+            cancelButtonColor: '#6b7280',
+            focusConfirm: false,
+            preConfirm: () => {
+                const title = document.getElementById('swal-annTitle').value.trim();
+                const message = document.getElementById('swal-annMessage').value.trim();
+                if (!title || !message) {
+                    Swal.showValidationMessage('Title and message are required');
+                    return false;
+                }
+                return {
+                    title: title,
+                    message: message,
+                    target: document.getElementById('swal-annTarget').value,
+                    featured: document.getElementById('swal-annFeatured').checked
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="create_announcement">
+                    <input type="hidden" name="announcementTitle" value="${escapeHtml(result.value.title)}">
+                    <input type="hidden" name="announcementMessage" value="${escapeHtml(result.value.message)}">
+                    <input type="hidden" name="targetRole" value="${result.value.target}">
+                    ${result.value.featured ? '<input type="hidden" name="isFeatured" value="1">' : ''}
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     document.querySelectorAll('.confirm-delete-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formEl = this;
             Swal.fire({
-                title: 'Are you sure?',
+                title: 'Delete Announcement?',
                 text: 'This action cannot be undone.',
                 icon: 'warning',
                 showCancelButton: true,

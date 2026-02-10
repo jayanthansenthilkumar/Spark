@@ -3,10 +3,28 @@ session_start();
 require_once 'db.php';
 require_once 'includes/auth.php';
 
-// Check if already logged in
-if (isset($_SESSION['user_id'])) {
+// Check for flash messages FIRST (before redirect check)
+$error = '';
+$success = false;
+$successMsg = '';
+$redirectUrl = '';
+
+if (isset($_SESSION['error'])) {
+    $error = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
+
+if (isset($_SESSION['success']) && isset($_SESSION['redirect_url'])) {
+    $success = true;
+    $successMsg = $_SESSION['success'];
+    $redirectUrl = $_SESSION['redirect_url'];
+    unset($_SESSION['success'], $_SESSION['redirect_url']);
+}
+
+// If already logged in AND no success message pending, redirect to dashboard
+if (isset($_SESSION['user_id']) && !$success && empty($error)) {
     $role = $_SESSION['role'];
-    $redirectUrl = 'studentDashboard.php'; // Default
+    $redirectUrl = 'studentDashboard.php';
     switch ($role) {
         case 'student':
             $redirectUrl = 'studentDashboard.php';
@@ -23,33 +41,6 @@ if (isset($_SESSION['user_id'])) {
     }
     header("Location: $redirectUrl");
     exit();
-}
-
-$error = '';
-$success = false;
-$redirectUrl = '';
-$userName = ''; // For welcome message
-
-if (isset($_SESSION['error'])) {
-    $error = $_SESSION['error'];
-    unset($_SESSION['error']);
-}
-
-if (isset($_SESSION['success'])) {
-    $success = true;
-    $userName = isset($_SESSION['name']) ? $_SESSION['name'] : '';
-    // Typically the success message itself is stored in $_SESSION['success'] as a string,
-    // but the original code used $success = true boolean and pulled name from $user array.
-    // The sparkBackend sets $_SESSION['success'] string and $_SESSION['redirect_url'].
-    // We need to adapt.
-
-    // sparkBackend.php logic: $_SESSION['success'] = "Welcome back..."; $_SESSION['redirect_url'] = "...";
-    // We should use those.
-    $successMsg = $_SESSION['success']; // String
-    $redirectUrl = $_SESSION['redirect_url'];
-
-    unset($_SESSION['success']);
-    unset($_SESSION['redirect_url']);
 }
 ?>
 <!DOCTYPE html>
@@ -118,22 +109,21 @@ if (isset($_SESSION['success'])) {
         <?php endif; ?>
 
         // Show success and redirect
-        <?php if (isset($success) && $success): ?>
+        <?php if ($success): ?>
             Swal.fire({
                 icon: 'success',
                 title: 'Login Successful',
-                text: '<?php echo isset($successMsg) ? addslashes($successMsg) : "Welcome back!"; ?>',
+                text: '<?php echo addslashes($successMsg); ?>',
                 confirmButtonColor: '#2563eb',
                 timer: 1500,
                 timerProgressBar: true,
                 showConfirmButton: false
             }).then(() => {
-                // Set session storage as required by auth check
                 sessionStorage.setItem('userData', JSON.stringify({
                     loggedIn: true,
-                    username: '<?php echo isset($_SESSION['username']) ? addslashes($_SESSION['username']) : ""; ?>'
+                    username: '<?php echo addslashes($_SESSION['username'] ?? ''); ?>'
                 }));
-                window.location.href = '<?php echo $redirectUrl; ?>';
+                window.location.href = '<?php echo addslashes($redirectUrl); ?>';
             });
         <?php endif; ?>
     </script>

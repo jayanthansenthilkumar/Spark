@@ -8,13 +8,38 @@ $userName = $_SESSION['name'] ?? 'Student';
 $userInitials = strtoupper(substr($userName, 0, 2));
 $userId = $_SESSION['user_id'];
 
-// Fetch student stats
+// Check if student has a team (needed for accurate project counts)
+$myTeam = null;
+$isLeader = false;
+$teamCheck = mysqli_prepare($conn, "SELECT t.*, tm.role as my_role FROM team_members tm JOIN teams t ON tm.team_id = t.id WHERE tm.user_id = ?");
+mysqli_stmt_bind_param($teamCheck, "i", $userId);
+mysqli_stmt_execute($teamCheck);
+$teamResult = mysqli_stmt_get_result($teamCheck);
+$myTeam = mysqli_fetch_assoc($teamResult);
+mysqli_stmt_close($teamCheck);
+
+$teamMemberCount = 0;
+if ($myTeam) {
+    $isLeader = ((int)$myTeam['leader_id'] === (int)$userId);
+    $countStmt = mysqli_prepare($conn, "SELECT COUNT(*) as cnt FROM team_members WHERE team_id = ?");
+    mysqli_stmt_bind_param($countStmt, "i", $myTeam['id']);
+    mysqli_stmt_execute($countStmt);
+    $teamMemberCount = mysqli_fetch_assoc(mysqli_stmt_get_result($countStmt))['cnt'];
+    mysqli_stmt_close($countStmt);
+}
+
+// Fetch student stats (team-based if in a team, otherwise individual)
 $totalProjects = 0;
 $approvedProjects = 0;
 $pendingProjects = 0;
 
-$stmt = mysqli_prepare($conn, "SELECT status, COUNT(*) as cnt FROM projects WHERE student_id = ? GROUP BY status");
-mysqli_stmt_bind_param($stmt, "i", $userId);
+if ($myTeam) {
+    $stmt = mysqli_prepare($conn, "SELECT status, COUNT(*) as cnt FROM projects WHERE team_id = ? GROUP BY status");
+    mysqli_stmt_bind_param($stmt, "i", $myTeam['id']);
+} else {
+    $stmt = mysqli_prepare($conn, "SELECT status, COUNT(*) as cnt FROM projects WHERE student_id = ? GROUP BY status");
+    mysqli_stmt_bind_param($stmt, "i", $userId);
+}
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 while ($row = mysqli_fetch_assoc($result)) {
@@ -42,22 +67,16 @@ while ($row = mysqli_fetch_assoc($schedResult)) {
     $scheduleItems[] = $row;
 }
 
-// Check if student has a team
-$myTeam = null;
-$teamCheck = mysqli_prepare($conn, "SELECT t.*, tm.role as my_role FROM team_members tm JOIN teams t ON tm.team_id = t.id WHERE tm.user_id = ?");
-mysqli_stmt_bind_param($teamCheck, "i", $userId);
-mysqli_stmt_execute($teamCheck);
-$teamResult = mysqli_stmt_get_result($teamCheck);
-$myTeam = mysqli_fetch_assoc($teamResult);
-mysqli_stmt_close($teamCheck);
+// Team info already fetched above
 
-$teamMemberCount = 0;
-if ($myTeam) {
-    $countStmt = mysqli_prepare($conn, "SELECT COUNT(*) as cnt FROM team_members WHERE team_id = ?");
-    mysqli_stmt_bind_param($countStmt, "i", $myTeam['id']);
-    mysqli_stmt_execute($countStmt);
-    $teamMemberCount = mysqli_fetch_assoc(mysqli_stmt_get_result($countStmt))['cnt'];
-    mysqli_stmt_close($countStmt);
+// Check pending invitations for students without a team
+$pendingInviteCount = 0;
+if (!$myTeam) {
+    $invStmt = mysqli_prepare($conn, "SELECT COUNT(*) as cnt FROM team_invitations WHERE invited_user_id = ? AND status = 'pending'");
+    mysqli_stmt_bind_param($invStmt, "i", $userId);
+    mysqli_stmt_execute($invStmt);
+    $pendingInviteCount = (int)mysqli_fetch_assoc(mysqli_stmt_get_result($invStmt))['cnt'];
+    mysqli_stmt_close($invStmt);
 }
 
 $successMsg = $_SESSION['success'] ?? '';
@@ -121,19 +140,25 @@ unset($_SESSION['success'], $_SESSION['error']);
                         <i class="ri-error-warning-line" style="font-size:1.5rem;"></i>
                         <div>
                             <strong>You haven't joined a team yet!</strong>
-                            <p style="font-size:0.85rem;opacity:0.9;">Register for SPARK'26 by creating or joining a team.</p>
+                            <p style="font-size:0.85rem;opacity:0.9;">Register for SPARK'26 by creating or joining a team.<?php if ($pendingInviteCount > 0): ?> You have <strong><?php echo $pendingInviteCount; ?> pending invitation<?php echo $pendingInviteCount > 1 ? 's' : ''; ?></strong>!<?php endif; ?></p>
                         </div>
                     </div>
-                    <a href="myTeam.php" style="background:#92400e;color:#fff;padding:0.5rem 1.25rem;border-radius:8px;font-weight:600;text-decoration:none;font-size:0.9rem;">Register Now</a>
+                    <a href="myTeam.php" style="background:#92400e;color:#fff;padding:0.5rem 1.25rem;border-radius:8px;font-weight:600;text-decoration:none;font-size:0.9rem;"><?php echo $pendingInviteCount > 0 ? 'View Invitations' : 'Register Now'; ?></a>
                 </div>
                 <?php endif; ?>
 
                 <!-- Welcome Card -->
                 <div class="welcome-card">
                     <h2>Welcome back, <?php echo htmlspecialchars(explode(' ', $userName)[0]); ?>! 👋</h2>
-                    <p>Ready to showcase your innovation? Submit your project and compete with the best minds on campus.
+                    <p>Ready to showcase your innovation? <?php echo ($myTeam && $isLeader) ? 'Submit your project and compete with the best minds on campus.' : 'Join a team to get started with SPARK\'26.'; ?>
                     </p>
+                    <?php if ($myTeam && $isLeader): ?>
                     <a href="submitProject.php" class="btn-light">Submit Project</a>
+                    <?php elseif ($myTeam): ?>
+                    <a href="myProjects.php" class="btn-light">View Projects</a>
+                    <?php else: ?>
+                    <a href="myTeam.php" class="btn-light">Join a Team</a>
+                    <?php endif; ?>
                     <div class="welcome-decoration">
                         <i class="ri-rocket-2-line"></i>
                     </div>
@@ -191,6 +216,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <p><?php echo $myTeam ? $teamMemberCount . ' members &bull; ' . ucfirst($myTeam['my_role']) : 'Register for SPARK\'26'; ?></p>
                         </div>
                     </a>
+                    <?php if ($myTeam && $isLeader): ?>
                     <a href="submitProject.php" class="action-card" style="text-decoration:none;color:inherit;">
                         <div class="action-icon">
                             <i class="ri-add-line"></i>
@@ -200,6 +226,17 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <p>Submit a new project</p>
                         </div>
                     </a>
+                    <?php elseif (!$myTeam && $pendingInviteCount > 0): ?>
+                    <a href="myTeam.php" class="action-card" style="text-decoration:none;color:inherit;">
+                        <div class="action-icon" style="background:#dbeafe;">
+                            <i class="ri-mail-line" style="color:#1d4ed8;"></i>
+                        </div>
+                        <div>
+                            <h4>Invitations</h4>
+                            <p><?php echo $pendingInviteCount; ?> pending invitation<?php echo $pendingInviteCount > 1 ? 's' : ''; ?></p>
+                        </div>
+                    </a>
+                    <?php endif; ?>
                     <a href="myProjects.php" class="action-card" style="text-decoration:none;color:inherit;">
                         <div class="action-icon">
                             <i class="ri-folder-line"></i>

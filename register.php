@@ -159,9 +159,12 @@ if (isset($_SESSION['success'])) {
         <?php if ($success): ?>
             Swal.fire({
                 icon: 'success',
-                title: 'Success!',
+                title: 'Registration Successful!',
                 text: '<?php echo addslashes($success); ?>',
-                confirmButtonColor: '#2563eb'
+                confirmButtonColor: '#2563eb',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
             }).then(() => {
                 window.location.href = 'login.php';
             });
@@ -319,6 +322,23 @@ if (isset($_SESSION['success'])) {
         // Form validation before submit
         document.getElementById('registerForm').addEventListener('submit', function (e) {
             const rollNumber = rollNumberInput.value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const department = departmentSelect.value;
+            const year = yearSelect.value;
+
+            if (!name || !username || !department || !year || !email || !password) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Fields',
+                    text: 'Please fill in all required fields',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
+            }
             if (rollNumber.length !== 12) {
                 e.preventDefault();
                 Swal.fire({
@@ -327,6 +347,27 @@ if (isset($_SESSION['success'])) {
                     text: 'Register number must be exactly 12 characters',
                     confirmButtonColor: '#2563eb'
                 });
+                return;
+            }
+            if (password.length < 6) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Weak Password',
+                    text: 'Password must be at least 6 characters long',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
+            }
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Email',
+                    text: 'Please enter a valid email address',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
             }
         });
     </script>

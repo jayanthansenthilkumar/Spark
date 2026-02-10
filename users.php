@@ -104,7 +104,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 <option value="studentaffairs" <?php if($filterRole==='studentaffairs') echo 'selected'; ?>>Student Affairs</option>
                             </select>
                         </form>
-                        <button class="btn-primary" onclick="document.getElementById('addUserModal').style.display='flex'">
+                        <button class="btn-primary" onclick="showAddUser()">
                             <i class="ri-add-line"></i> Add User
                         </button>
                     </div>
@@ -183,134 +183,176 @@ unset($_SESSION['success'], $_SESSION['error']);
                     <a href="?page=<?php echo min($totalPages, $page+1); ?>&role=<?php echo $filterRole; ?>" class="btn-pagination" <?php if($page>=$totalPages) echo 'disabled'; ?>>Next &raquo;</a>
                 </div>
 
-                <!-- Add User Modal -->
-                <div class="compose-modal" id="addUserModal" style="display:none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Add New User</h3>
-                            <button class="btn-icon" onclick="document.getElementById('addUserModal').style.display='none'"><i class="ri-close-line"></i></button>
-                        </div>
-                        <form action="sparkBackend.php" method="POST">
-                            <input type="hidden" name="action" value="add_user">
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <input type="text" name="name" required placeholder="Enter full name">
-                            </div>
-                            <div class="form-group">
-                                <label>Username</label>
-                                <input type="text" name="username" required placeholder="Enter username">
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" name="email" required placeholder="Enter email">
-                            </div>
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input type="password" name="password" required placeholder="Enter password">
-                            </div>
-                            <div class="form-group">
-                                <label>Role</label>
-                                <select name="role" required>
-                                    <option value="student">Student</option>
-                                    <option value="departmentcoordinator">Department Coordinator</option>
-                                    <option value="studentaffairs">Student Affairs</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Department</label>
-                                <select name="department">
-                                    <option value="">Select Department</option>
-                                    <?php foreach ($departments as $dept): ?>
-                                    <option value="<?php echo $dept; ?>"><?php echo $dept; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="modal-actions">
-                                <button type="button" class="btn-secondary" onclick="document.getElementById('addUserModal').style.display='none'">Cancel</button>
-                                <button type="submit" class="btn-primary">Add User</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Edit User Modal -->
-                <div class="compose-modal" id="editUserModal" style="display:none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Edit User</h3>
-                            <button class="btn-icon" onclick="document.getElementById('editUserModal').style.display='none'"><i class="ri-close-line"></i></button>
-                        </div>
-                        <form action="sparkBackend.php" method="POST">
-                            <input type="hidden" name="action" value="edit_user">
-                            <input type="hidden" name="user_id" id="editUserId">
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <input type="text" name="name" id="editName" required placeholder="Enter full name">
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" name="email" id="editEmail" required placeholder="Enter email">
-                            </div>
-                            <div class="form-group">
-                                <label>Role</label>
-                                <select name="role" id="editRole" required>
-                                    <option value="student">Student</option>
-                                    <option value="departmentcoordinator">Department Coordinator</option>
-                                    <option value="studentaffairs">Student Affairs</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Department</label>
-                                <select name="department" id="editDept">
-                                    <option value="">Select Department</option>
-                                    <?php foreach ($departments as $dept): ?>
-                                    <option value="<?php echo $dept; ?>"><?php echo $dept; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="modal-actions">
-                                <button type="button" class="btn-secondary" onclick="document.getElementById('editUserModal').style.display='none'">Cancel</button>
-                                <button type="submit" class="btn-primary">Save Changes</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <!-- User modals handled via SweetAlert -->
             </div>
         </main>
     </div>
 
     <script src="assets/js/script.js"></script>
     <script>
-    function openEditUser(id, name, email, role, department) {
-        document.getElementById('editUserId').value = id;
-        document.getElementById('editName').value = name;
-        document.getElementById('editEmail').value = email;
-        document.getElementById('editRole').value = role;
-        document.getElementById('editDept').value = department;
-        document.getElementById('editUserModal').style.display = 'flex';
+    const departments = <?php echo json_encode($departments); ?>;
+
+    function getDeptOptions(selected) {
+        return '<option value="">Select Department</option>' + departments.map(d =>
+            `<option value="${d}" ${d === selected ? 'selected' : ''}>${d}</option>`
+        ).join('');
     }
-    </script>
-    <script>
+
+    function showAddUser() {
+        Swal.fire({
+            title: 'Add New User',
+            html: `
+                <div style="text-align:left;">
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Full Name *</label>
+                    <input id="swal-name" class="swal2-input" placeholder="Enter full name" style="margin:0 0 0.75rem 0;width:100%;box-sizing:border-box;">
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Username *</label>
+                    <input id="swal-username" class="swal2-input" placeholder="Enter username" style="margin:0 0 0.75rem 0;width:100%;box-sizing:border-box;">
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Email *</label>
+                    <input id="swal-email" type="email" class="swal2-input" placeholder="Enter email" style="margin:0 0 0.75rem 0;width:100%;box-sizing:border-box;">
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Password *</label>
+                    <input id="swal-password" type="password" class="swal2-input" placeholder="Enter password" style="margin:0 0 0.75rem 0;width:100%;box-sizing:border-box;">
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Role</label>
+                    <select id="swal-role" class="swal2-select" style="margin:0 0 0.75rem 0;width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">
+                        <option value="student">Student</option>
+                        <option value="departmentcoordinator">Department Coordinator</option>
+                        <option value="studentaffairs">Student Affairs</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Department</label>
+                    <select id="swal-dept" class="swal2-select" style="margin:0;width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">
+                        ${getDeptOptions('')}
+                    </select>
+                </div>
+            `,
+            confirmButtonText: '<i class="ri-user-add-line"></i> Add User',
+            confirmButtonColor: '#2563eb',
+            showCancelButton: true,
+            cancelButtonColor: '#6b7280',
+            width: '500px',
+            focusConfirm: false,
+            preConfirm: () => {
+                const name = document.getElementById('swal-name').value.trim();
+                const username = document.getElementById('swal-username').value.trim();
+                const email = document.getElementById('swal-email').value.trim();
+                const password = document.getElementById('swal-password').value;
+                if (!name || !username || !email || !password) {
+                    Swal.showValidationMessage('Name, username, email, and password are required');
+                    return false;
+                }
+                return {
+                    name, username, email, password,
+                    role: document.getElementById('swal-role').value,
+                    department: document.getElementById('swal-dept').value
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const d = result.value;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="add_user">
+                    <input type="hidden" name="name" value="${escapeHtml(d.name)}">
+                    <input type="hidden" name="username" value="${escapeHtml(d.username)}">
+                    <input type="hidden" name="email" value="${escapeHtml(d.email)}">
+                    <input type="hidden" name="password" value="${escapeHtml(d.password)}">
+                    <input type="hidden" name="role" value="${d.role}">
+                    <input type="hidden" name="department" value="${escapeHtml(d.department)}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function openEditUser(id, name, email, role, department) {
+        Swal.fire({
+            title: 'Edit User',
+            html: `
+                <div style="text-align:left;">
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Full Name *</label>
+                    <input id="swal-editName" class="swal2-input" value="${escapeHtml(name)}" style="margin:0 0 0.75rem 0;width:100%;box-sizing:border-box;">
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Email *</label>
+                    <input id="swal-editEmail" type="email" class="swal2-input" value="${escapeHtml(email)}" style="margin:0 0 0.75rem 0;width:100%;box-sizing:border-box;">
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Role</label>
+                    <select id="swal-editRole" class="swal2-select" style="margin:0 0 0.75rem 0;width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">
+                        <option value="student" ${role==='student'?'selected':''}>Student</option>
+                        <option value="departmentcoordinator" ${role==='departmentcoordinator'?'selected':''}>Department Coordinator</option>
+                        <option value="studentaffairs" ${role==='studentaffairs'?'selected':''}>Student Affairs</option>
+                        <option value="admin" ${role==='admin'?'selected':''}>Admin</option>
+                    </select>
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Department</label>
+                    <select id="swal-editDept" class="swal2-select" style="margin:0;width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">
+                        ${getDeptOptions(department)}
+                    </select>
+                </div>
+            `,
+            confirmButtonText: '<i class="ri-save-line"></i> Save Changes',
+            confirmButtonColor: '#2563eb',
+            showCancelButton: true,
+            cancelButtonColor: '#6b7280',
+            width: '500px',
+            focusConfirm: false,
+            preConfirm: () => {
+                const editName = document.getElementById('swal-editName').value.trim();
+                const editEmail = document.getElementById('swal-editEmail').value.trim();
+                if (!editName || !editEmail) {
+                    Swal.showValidationMessage('Name and email are required');
+                    return false;
+                }
+                return {
+                    name: editName,
+                    email: editEmail,
+                    role: document.getElementById('swal-editRole').value,
+                    department: document.getElementById('swal-editDept').value
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const d = result.value;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="edit_user">
+                    <input type="hidden" name="user_id" value="${id}">
+                    <input type="hidden" name="name" value="${escapeHtml(d.name)}">
+                    <input type="hidden" name="email" value="${escapeHtml(d.email)}">
+                    <input type="hidden" name="role" value="${d.role}">
+                    <input type="hidden" name="department" value="${escapeHtml(d.department)}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     <?php if ($successMsg): ?>
     Swal.fire({ icon: 'success', title: 'Success!', text: '<?php echo addslashes($successMsg); ?>', confirmButtonColor: '#2563eb', timer: 3000, timerProgressBar: true });
     <?php endif; ?>
     <?php if ($errorMsg): ?>
     Swal.fire({ icon: 'error', title: 'Oops!', text: '<?php echo addslashes($errorMsg); ?>', confirmButtonColor: '#2563eb' });
     <?php endif; ?>
+
     document.querySelectorAll('.confirm-delete-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formEl = this;
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'This action cannot be undone.',
+                title: 'Delete User?',
+                text: 'This action cannot be undone. All associated data will be removed.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: 'Yes, delete!'
             }).then((result) => {
                 if (result.isConfirmed) formEl.submit();
             });

@@ -8,36 +8,16 @@ $userName = $_SESSION['name'] ?? 'Admin';
 $userInitials = strtoupper(substr($userName, 0, 2));
 $userRole = ucfirst($_SESSION['role'] ?? $_SESSION['user_role'] ?? 'Admin');
 
-// Handle score submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'score_project') {
-    $projectId = intval($_POST['project_id']);
-    $score = intval($_POST['score']);
-    if ($score >= 0 && $score <= 100) {
-        $stmt = $conn->prepare("UPDATE projects SET score = ? WHERE id = ? AND status = 'approved'");
-        $stmt->bind_param('ii', $score, $projectId);
-        if ($stmt->execute()) {
-            $_SESSION['flash_message'] = 'Score updated successfully!';
-            $_SESSION['flash_type'] = 'success';
-        } else {
-            $_SESSION['flash_message'] = 'Failed to update score.';
-            $_SESSION['flash_type'] = 'error';
-        }
-        $stmt->close();
-    } else {
-        $_SESSION['flash_message'] = 'Score must be between 0 and 100.';
-        $_SESSION['flash_type'] = 'error';
-    }
-    header('Location: judging.php');
-    exit;
-}
-
-// Fetch approved projects with student name
+// Fetch approved projects with student name using prepared statement
 $projects = [];
-$result = $conn->query("SELECT p.*, u.name as student_name FROM projects p LEFT JOIN users u ON p.student_id = u.id WHERE p.status = 'approved' ORDER BY p.score DESC, p.title ASC");
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
+$stmt = mysqli_prepare($conn, "SELECT p.*, u.name as student_name FROM projects p LEFT JOIN users u ON p.student_id = u.id WHERE p.status = 'approved' ORDER BY p.score DESC, p.title ASC");
+if ($stmt) {
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    while ($row = mysqli_fetch_assoc($result)) {
         $projects[] = $row;
     }
+    mysqli_stmt_close($stmt);
 }
 
 // Count totals
@@ -50,9 +30,10 @@ $unscoredCount = $totalApproved - $scoredCount;
 $progressPercent = $totalApproved > 0 ? round(($scoredCount / $totalApproved) * 100) : 0;
 
 // Flash messages
-$flashMessage = $_SESSION['flash_message'] ?? null;
-$flashType = $_SESSION['flash_type'] ?? 'info';
-unset($_SESSION['flash_message'], $_SESSION['flash_type']);
+$flashMessage = $_SESSION['flash_message'] ?? $_SESSION['success'] ?? null;
+$flashType = $_SESSION['flash_type'] ?? (isset($_SESSION['success']) ? 'success' : (isset($_SESSION['error']) ? 'error' : 'info'));
+if (isset($_SESSION['error'])) { $flashMessage = $_SESSION['error']; $flashType = 'error'; }
+unset($_SESSION['flash_message'], $_SESSION['flash_type'], $_SESSION['success'], $_SESSION['error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -183,24 +164,7 @@ unset($_SESSION['flash_message'], $_SESSION['flash_type']);
                     </div>
                 </div>
 
-                <!-- Score Modal -->
-                <div id="scoreModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-                    <div style="background:#fff; border-radius:12px; padding:30px; max-width:400px; width:90%; margin:auto; position:relative; top:50%; transform:translateY(-50%);">
-                        <h3 id="scoreModalTitle" style="margin-bottom:20px;">Score Project</h3>
-                        <form method="POST" action="judging.php">
-                            <input type="hidden" name="action" value="score_project">
-                            <input type="hidden" name="project_id" id="scoreProjectId">
-                            <div style="margin-bottom:16px;">
-                                <label style="display:block; margin-bottom:6px; font-weight:500;">Score (0-100)</label>
-                                <input type="number" name="score" id="scoreInput" min="0" max="100" required style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; font-size:16px;">
-                            </div>
-                            <div style="display:flex; gap:10px; justify-content:flex-end;">
-                                <button type="button" class="btn-secondary" onclick="closeScoreModal()">Cancel</button>
-                                <button type="submit" class="btn-primary">Submit Score</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <!-- Score handled via SweetAlert -->
             </div>
         </main>
     </div>
@@ -208,17 +172,42 @@ unset($_SESSION['flash_message'], $_SESSION['flash_type']);
     <script src="assets/js/script.js"></script>
     <script>
         function openScoreModal(projectId, title, currentScore) {
-            document.getElementById('scoreProjectId').value = projectId;
-            document.getElementById('scoreModalTitle').textContent = 'Score: ' + title;
-            document.getElementById('scoreInput').value = currentScore > 0 ? currentScore : '';
-            document.getElementById('scoreModal').style.display = 'block';
+            Swal.fire({
+                title: 'Score: ' + title,
+                html: `
+                    <div style="text-align:left;">
+                        <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:0.3rem;">Score (0-100)</label>
+                        <input id="swal-score" type="number" class="swal2-input" min="0" max="100" value="${currentScore > 0 ? currentScore : ''}" placeholder="Enter score" style="margin:0;width:100%;box-sizing:border-box;">
+                    </div>
+                `,
+                confirmButtonText: '<i class="ri-star-line"></i> Submit Score',
+                confirmButtonColor: '#2563eb',
+                showCancelButton: true,
+                cancelButtonColor: '#6b7280',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const score = parseInt(document.getElementById('swal-score').value);
+                    if (isNaN(score) || score < 0 || score > 100) {
+                        Swal.showValidationMessage('Score must be between 0 and 100');
+                        return false;
+                    }
+                    return score;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'sparkBackend.php';
+                    form.innerHTML = `
+                        <input type="hidden" name="action" value="score_project">
+                        <input type="hidden" name="project_id" value="${projectId}">
+                        <input type="hidden" name="score" value="${result.value}">
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         }
-        function closeScoreModal() {
-            document.getElementById('scoreModal').style.display = 'none';
-        }
-        document.getElementById('scoreModal').addEventListener('click', function(e) {
-            if (e.target === this) closeScoreModal();
-        });
     </script>
     <script>
     <?php if ($flashMessage): ?>

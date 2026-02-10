@@ -58,7 +58,7 @@ function checkUserAccess($isPublic = false)
         ],
         'student' => [
             'studentDashboard.php', 'myProjects.php', 'submitProject.php', 'myTeam.php',
-            'schedule.php', 'guidelines.php', 'announcements.php', 'profile.php', 'settings.php', 
+            'schedule.php', 'guidelines.php', 'announcements.php', 'messages.php', 'profile.php', 'settings.php', 
             'logout.php', 'index.php'
         ]
     ];
@@ -82,13 +82,13 @@ function checkUserAccess($isPublic = false)
         exit();
     }
 
-    // Verify sessionStorage data exists (Frontend Check)
-    echo "<script>
-        if (!sessionStorage.getItem('userData')) {
-             // If manual clearing happens or mismatch, we might want to logout
-             // window.location.href = 'logout.php'; 
-        }
-    </script>";
+    // Verify session integrity
+    if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+        session_unset();
+        session_destroy();
+        header('Location: login.php');
+        exit();
+    }
 }
 
 // Prevent caching for all authenticated pages

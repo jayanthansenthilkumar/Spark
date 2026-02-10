@@ -44,7 +44,7 @@ if ($myTeam) {
     mysqli_stmt_close($memberStmt);
 
     // Fetch team's projects
-    $projStmt = mysqli_prepare($conn, "SELECT p.* FROM projects p WHERE p.student_id IN (SELECT user_id FROM team_members WHERE team_id = ?) ORDER BY p.created_at DESC");
+    $projStmt = mysqli_prepare($conn, "SELECT p.* FROM projects p WHERE p.team_id = ? ORDER BY p.created_at DESC");
     mysqli_stmt_bind_param($projStmt, "i", $myTeam['id']);
     mysqli_stmt_execute($projStmt);
     $projResult = mysqli_stmt_get_result($projStmt);
@@ -53,6 +53,39 @@ if ($myTeam) {
         $teamProjects[] = $row;
     }
     mysqli_stmt_close($projStmt);
+
+    // Fetch pending sent invitations (for leader view)
+    $sentInvitations = [];
+    if ($isLeader) {
+        $sentStmt = mysqli_prepare($conn, "SELECT ti.*, u.name as invited_name, u.email as invited_email, u.department as invited_dept FROM team_invitations ti JOIN users u ON ti.invited_user_id = u.id WHERE ti.team_id = ? AND ti.status = 'pending' ORDER BY ti.created_at DESC");
+        mysqli_stmt_bind_param($sentStmt, "i", $myTeam['id']);
+        mysqli_stmt_execute($sentStmt);
+        $sentResult = mysqli_stmt_get_result($sentStmt);
+        while ($row = mysqli_fetch_assoc($sentResult)) {
+            $sentInvitations[] = $row;
+        }
+        mysqli_stmt_close($sentStmt);
+
+        // Fetch students not in any team (for invite dropdown)
+        $invitableStmt = mysqli_prepare($conn, "SELECT u.id, u.name, u.email, u.department, u.reg_no FROM users u WHERE u.role = 'student' AND u.id != ? AND u.id NOT IN (SELECT user_id FROM team_members) ORDER BY u.name ASC");
+        mysqli_stmt_bind_param($invitableStmt, "i", $userId);
+        mysqli_stmt_execute($invitableStmt);
+        $invitableStudents = mysqli_fetch_all(mysqli_stmt_get_result($invitableStmt), MYSQLI_ASSOC);
+        mysqli_stmt_close($invitableStmt);
+    }
+}
+
+// Fetch pending invitations FOR the current user (when they have no team)
+$pendingInvitations = [];
+if (!$myTeam) {
+    $invStmt = mysqli_prepare($conn, "SELECT ti.*, t.team_name, t.department as team_dept, u.name as leader_name FROM team_invitations ti JOIN teams t ON ti.team_id = t.id JOIN users u ON ti.invited_by = u.id WHERE ti.invited_user_id = ? AND ti.status = 'pending' ORDER BY ti.created_at DESC");
+    mysqli_stmt_bind_param($invStmt, "i", $userId);
+    mysqli_stmt_execute($invStmt);
+    $invResult = mysqli_stmt_get_result($invStmt);
+    while ($row = mysqli_fetch_assoc($invResult)) {
+        $pendingInvitations[] = $row;
+    }
+    mysqli_stmt_close($invStmt);
 }
 
 $successMsg = $_SESSION['success'] ?? '';
@@ -130,8 +163,47 @@ unset($_SESSION['success'], $_SESSION['error']);
                     </div>
                 </div>
 
+                <?php if (!empty($pendingInvitations)): ?>
+                <!-- ===== PENDING INVITATIONS ===== -->
+                <div class="dash-card" style="margin-top:2rem;border:2px solid #3b82f6;">
+                    <div class="dash-card-header">
+                        <h3><i class="ri-mail-send-line" style="color:#3b82f6;margin-right:0.5rem;"></i> Team Invitations <span style="background:#3b82f6;color:#fff;padding:0.15rem 0.5rem;border-radius:12px;font-size:0.75rem;margin-left:0.5rem;"><?php echo count($pendingInvitations); ?></span></h3>
+                    </div>
+                    <div class="dash-card-body">
+                        <p style="color:var(--text-muted);margin-bottom:1rem;">You have been invited to join the following teams:</p>
+                        <?php foreach ($pendingInvitations as $inv): ?>
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem;border:1px solid var(--border);border-radius:10px;margin-bottom:0.75rem;background:var(--bg-surface);">
+                            <div>
+                                <strong style="font-size:0.95rem;"><?php echo htmlspecialchars($inv['team_name']); ?></strong>
+                                <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem;">
+                                    Invited by <?php echo htmlspecialchars($inv['leader_name']); ?>
+                                    <?php if ($inv['team_dept']): ?> &bull; <?php echo htmlspecialchars($inv['team_dept']); ?><?php endif; ?>
+                                    &bull; <?php echo date('M d, Y', strtotime($inv['created_at'])); ?>
+                                </p>
+                            </div>
+                            <div style="display:flex;gap:0.5rem;">
+                                <form action="sparkBackend.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="action" value="accept_invite">
+                                    <input type="hidden" name="invite_id" value="<?php echo $inv['id']; ?>">
+                                    <button type="submit" class="btn-primary" style="font-size:0.8rem;padding:0.4rem 0.8rem;">
+                                        <i class="ri-check-line"></i> Accept
+                                    </button>
+                                </form>
+                                <form action="sparkBackend.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="action" value="decline_invite">
+                                    <input type="hidden" name="invite_id" value="<?php echo $inv['id']; ?>">
+                                    <button type="submit" class="btn-secondary" style="font-size:0.8rem;padding:0.4rem 0.8rem;color:#ef4444;border-color:#ef4444;">
+                                        <i class="ri-close-line"></i> Decline
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <?php else: ?>
-                <!-- ===== HAS TEAM - SHOW TEAM DASHBOARD ===== -->
                 
                 <!-- Team Info Card -->
                 <div class="welcome-card" style="margin-bottom:2rem;">
@@ -158,7 +230,10 @@ unset($_SESSION['success'], $_SESSION['error']);
                         </div>
                         <?php if ($isLeader): ?>
                         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                            <button class="btn-primary" style="font-size:0.85rem;" onclick="showTeamCode('<?php echo $myTeam['team_code']; ?>')">
+                            <button class="btn-primary" style="font-size:0.85rem;" onclick="showInviteMember()">
+                                <i class="ri-user-add-line"></i> Invite Member
+                            </button>
+                            <button class="btn-primary" style="font-size:0.85rem;background:#10b981;" onclick="showTeamCode('<?php echo $myTeam['team_code']; ?>')">
                                 <i class="ri-share-line"></i> Share Code
                             </button>
                             <button class="btn-secondary" style="font-size:0.85rem;color:#ef4444;border-color:#ef4444;" onclick="confirmDeleteTeam(<?php echo $myTeam['id']; ?>)">
@@ -243,7 +318,11 @@ unset($_SESSION['success'], $_SESSION['error']);
                     <div class="dash-card">
                         <div class="dash-card-header">
                             <h3>Team Projects</h3>
+                            <?php if ($isLeader): ?>
                             <a href="submitProject.php" style="color:var(--primary);font-size:0.9rem;"><i class="ri-add-line"></i> New</a>
+                            <?php else: ?>
+                            <span style="font-size:0.8rem;color:var(--text-muted);"><i class="ri-eye-line"></i> View Only</span>
+                            <?php endif; ?>
                         </div>
                         <div class="dash-card-body">
                             <?php if (empty($teamProjects)): ?>
@@ -270,6 +349,29 @@ unset($_SESSION['success'], $_SESSION['error']);
                         </div>
                     </div>
                 </div>
+
+                <?php if ($isLeader && !empty($sentInvitations)): ?>
+                <!-- Sent Invitations -->
+                <div class="dash-card" style="margin-top:1.5rem;">
+                    <div class="dash-card-header">
+                        <h3><i class="ri-send-plane-line" style="margin-right:0.3rem;"></i> Pending Invitations Sent</h3>
+                    </div>
+                    <div class="dash-card-body">
+                        <?php foreach ($sentInvitations as $inv): ?>
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border);">
+                            <div>
+                                <strong style="font-size:0.9rem;"><?php echo htmlspecialchars($inv['invited_name']); ?></strong>
+                                <p style="font-size:0.8rem;color:var(--text-muted);"><?php echo htmlspecialchars($inv['invited_email']); ?> &bull; <?php echo htmlspecialchars($inv['invited_dept'] ?? ''); ?> &bull; Sent <?php echo date('M d', strtotime($inv['created_at'])); ?></p>
+                            </div>
+                            <button class="btn-secondary" style="font-size:0.75rem;padding:0.3rem 0.6rem;color:#ef4444;border-color:#ef4444;" onclick="confirmCancelInvite(<?php echo $inv['id']; ?>, '<?php echo addslashes($inv['invited_name']); ?>')">
+                                <i class="ri-close-line"></i> Cancel
+                            </button>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <?php endif; ?>
             </div>
         </main>
@@ -474,11 +576,148 @@ unset($_SESSION['success'], $_SESSION['error']);
         });
     }
 
+    <?php if ($myTeam && $isLeader): ?>
+    const invitableStudents = <?php echo json_encode($invitableStudents ?? []); ?>;
+
+    function showInviteMember() {
+        if (invitableStudents.length === 0) {
+            Swal.fire({
+                icon: 'info',
+                title: 'No Students Available',
+                text: 'All students are already in teams or no students are registered yet.',
+                confirmButtonColor: '#2563eb'
+            });
+            return;
+        }
+
+        let studentOptions = '<option value="">-- Select a student --</option>';
+        invitableStudents.forEach(s => {
+            studentOptions += `<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.department || '')}) - ${escapeHtml(s.reg_no || s.email)}</option>`;
+        });
+
+        Swal.fire({
+            title: 'Invite Team Member',
+            html: `
+                <div style="text-align:left;">
+                    <p style="color:#6b7280;font-size:0.85rem;margin-bottom:1rem;">Send an invitation to a student to join your team. They will see the invitation on their Team page.</p>
+                    <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:0.3rem;">Select Student *</label>
+                    <select id="swal-inviteUser" class="swal2-select" style="margin:0;width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">${studentOptions}</select>
+                    <div style="margin-top:0.75rem;">
+                        <input id="swal-searchStudent" type="text" class="swal2-input" placeholder="Type to search students..." style="margin:0;width:100%;box-sizing:border-box;" oninput="filterInviteStudents(this.value)">
+                    </div>
+                </div>
+            `,
+            confirmButtonText: '<i class="ri-send-plane-line"></i> Send Invitation',
+            confirmButtonColor: '#2563eb',
+            showCancelButton: true,
+            cancelButtonColor: '#6b7280',
+            focusConfirm: false,
+            didOpen: () => {
+                // Focus search field
+                document.getElementById('swal-searchStudent')?.focus();
+            },
+            preConfirm: () => {
+                const userId = document.getElementById('swal-inviteUser').value;
+                if (!userId) {
+                    Swal.showValidationMessage('Please select a student to invite');
+                    return false;
+                }
+                return userId;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="send_invite">
+                    <input type="hidden" name="invited_user_id" value="${result.value}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function filterInviteStudents(query) {
+        const select = document.getElementById('swal-inviteUser');
+        const q = query.toLowerCase();
+        select.innerHTML = '<option value="">-- Select a student --</option>';
+        invitableStudents.forEach(s => {
+            const text = `${s.name} ${s.department || ''} ${s.reg_no || ''} ${s.email}`.toLowerCase();
+            if (!q || text.includes(q)) {
+                select.innerHTML += `<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.department || '')}) - ${escapeHtml(s.reg_no || s.email)}</option>`;
+            }
+        });
+    }
+
+    function confirmCancelInvite(inviteId, studentName) {
+        Swal.fire({
+            title: 'Cancel Invitation?',
+            text: `Cancel the pending invitation to ${studentName}?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, cancel it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="cancel_invite">
+                    <input type="hidden" name="invite_id" value="${inviteId}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+    <?php endif; ?>
+
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
+
+    // SweetAlert confirmations for accept/decline invite forms
+    document.querySelectorAll('form input[name="action"][value="accept_invite"]').forEach(input => {
+        input.closest('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            Swal.fire({
+                title: 'Accept Invitation?',
+                text: 'You will join this team and any other pending invitations will be automatically declined.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, join team!'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+
+    document.querySelectorAll('form input[name="action"][value="decline_invite"]').forEach(input => {
+        input.closest('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            Swal.fire({
+                title: 'Decline Invitation?',
+                text: 'You can always ask the team leader to invite you again later.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, decline'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
     </script>
 </body>
 

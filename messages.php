@@ -125,7 +125,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                             <?php echo htmlspecialchars(mb_strimwidth($msg['subject'] ?? '(No subject)', 0, 40, '...')); ?>
                                         </div>
                                         <?php if (!$msg['is_read']): ?>
-                                            <span style="display:inline-block;width:8px;height:8px;background:#3b82f6;border-radius:50;position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);"></span>
+                                            <span style="display:inline-block;width:8px;height:8px;background:#3b82f6;border-radius:50%;position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);"></span>
                                         <?php endif; ?>
                                     </a>
                                 <?php endforeach; ?>
@@ -163,58 +163,84 @@ unset($_SESSION['success'], $_SESSION['error']);
                     </div>
                 </div>
 
-                <div class="compose-modal" id="composeModal" style="display: none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>New Message</h3>
-                            <button class="btn-icon" onclick="closeModal()">
-                                <i class="ri-close-line"></i>
-                            </button>
-                        </div>
-                        <form action="sparkBackend.php" method="POST">
-                            <input type="hidden" name="action" value="send_message">
-                            <div class="form-group">
-                                <label for="recipient">To</label>
-                                <select id="recipient" name="recipient" required style="width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">
-                                    <option value="">Select a recipient...</option>
-                                    <?php foreach ($allUsers as $user): ?>
-                                        <option value="<?php echo htmlspecialchars($user['email']); ?>">
-                                            <?php echo htmlspecialchars($user['name']); ?> (<?php echo htmlspecialchars($user['email']); ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="subject">Subject</label>
-                                <input type="text" id="subject" name="subject" placeholder="Enter subject">
-                            </div>
-                            <div class="form-group">
-                                <label for="message">Message</label>
-                                <textarea id="message" name="message" rows="6" placeholder="Type your message here..."></textarea>
-                            </div>
-                            <div class="modal-actions">
-                                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-                                <button type="submit" class="btn-primary">Send Message</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <!-- Compose modal handled via SweetAlert -->
             </div>
         </main>
     </div>
 
     <script src="assets/js/script.js"></script>
     <script>
-        function openModal() {
-            document.getElementById('composeModal').style.display = 'flex';
-        }
-        function closeModal() {
-            document.getElementById('composeModal').style.display = 'none';
-        }
-    </script>
-    <script>
+    const allUsers = <?php echo json_encode($allUsers); ?>;
+
+    function openModal() {
+        let userOptions = '<option value="">Select a recipient...</option>';
+        allUsers.forEach(u => {
+            userOptions += `<option value="${escapeHtml(u.email)}">${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`;
+        });
+
+        Swal.fire({
+            title: 'New Message',
+            html: `
+                <div style="text-align:left;">
+                    <div style="margin-bottom:0.75rem;">
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">To *</label>
+                        <select id="swal-recipient" class="swal2-select" style="margin:0;width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">${userOptions}</select>
+                    </div>
+                    <div style="margin-bottom:0.75rem;">
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Subject</label>
+                        <input id="swal-subject" class="swal2-input" placeholder="Enter subject" style="margin:0;width:100%;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Message *</label>
+                        <textarea id="swal-message" class="swal2-textarea" rows="6" placeholder="Type your message here..." style="margin:0;width:100%;box-sizing:border-box;"></textarea>
+                    </div>
+                </div>
+            `,
+            confirmButtonText: '<i class="ri-send-plane-line"></i> Send Message',
+            confirmButtonColor: '#2563eb',
+            showCancelButton: true,
+            cancelButtonColor: '#6b7280',
+            width: '550px',
+            focusConfirm: false,
+            preConfirm: () => {
+                const recipient = document.getElementById('swal-recipient').value;
+                const message = document.getElementById('swal-message').value.trim();
+                if (!recipient || !message) {
+                    Swal.showValidationMessage('Recipient and message are required');
+                    return false;
+                }
+                return {
+                    recipient: recipient,
+                    subject: document.getElementById('swal-subject').value.trim(),
+                    message: message
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const d = result.value;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="send_message">
+                    <input type="hidden" name="recipient" value="${escapeHtml(d.recipient)}">
+                    <input type="hidden" name="subject" value="${escapeHtml(d.subject)}">
+                    <input type="hidden" name="message" value="${escapeHtml(d.message)}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     <?php if ($successMsg): ?>
-    Swal.fire({ icon: 'success', title: 'Success!', text: '<?php echo addslashes($successMsg); ?>', confirmButtonColor: '#2563eb', timer: 3000, timerProgressBar: true });
+    Swal.fire({ icon: 'success', title: 'Sent!', text: '<?php echo addslashes($successMsg); ?>', confirmButtonColor: '#2563eb', timer: 3000, timerProgressBar: true });
     <?php endif; ?>
     <?php if ($errorMsg): ?>
     Swal.fire({ icon: 'error', title: 'Oops!', text: '<?php echo addslashes($errorMsg); ?>', confirmButtonColor: '#2563eb' });

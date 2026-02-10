@@ -3,15 +3,34 @@
 $current_page = basename($_SERVER['PHP_SELF']);
 $user_role = $_SESSION['role'] ?? strtolower($_SESSION['user_role'] ?? 'guest');
 
+// Check if student is a team leader (for sidebar display)
+$_isTeamLeader = false;
+if ($user_role === 'student' && isset($conn) && isset($_SESSION['user_id'])) {
+    $_tlStmt = mysqli_prepare($conn, "SELECT t.leader_id FROM team_members tm JOIN teams t ON tm.team_id = t.id WHERE tm.user_id = ?");
+    if ($_tlStmt) {
+        mysqli_stmt_bind_param($_tlStmt, "i", $_SESSION['user_id']);
+        mysqli_stmt_execute($_tlStmt);
+        $_tlRow = mysqli_fetch_assoc(mysqli_stmt_get_result($_tlStmt));
+        if ($_tlRow && (int)$_tlRow['leader_id'] === (int)$_SESSION['user_id']) {
+            $_isTeamLeader = true;
+        }
+        mysqli_stmt_close($_tlStmt);
+    }
+}
+
 // Define menu structure for each role
+$studentMain = [
+    ['link' => 'studentDashboard.php', 'icon' => 'ri-dashboard-line', 'text' => 'Dashboard'],
+    ['link' => 'myTeam.php', 'icon' => 'ri-team-line', 'text' => 'My Team'],
+    ['link' => 'myProjects.php', 'icon' => 'ri-folder-line', 'text' => 'My Projects'],
+];
+if ($_isTeamLeader) {
+    $studentMain[] = ['link' => 'submitProject.php', 'icon' => 'ri-add-circle-line', 'text' => 'Submit Project'];
+}
+
 $menus = [
     'student' => [
-        'Main' => [
-            ['link' => 'studentDashboard.php', 'icon' => 'ri-dashboard-line', 'text' => 'Dashboard'],
-            ['link' => 'myTeam.php', 'icon' => 'ri-team-line', 'text' => 'My Team'],
-            ['link' => 'myProjects.php', 'icon' => 'ri-folder-line', 'text' => 'My Projects'],
-            ['link' => 'submitProject.php', 'icon' => 'ri-add-circle-line', 'text' => 'Submit Project']
-        ],
+        'Main' => $studentMain,
         'Resources' => [
             ['link' => 'schedule.php', 'icon' => 'ri-calendar-line', 'text' => 'Schedule'],
             ['link' => 'guidelines.php', 'icon' => 'ri-file-list-line', 'text' => 'Guidelines'],

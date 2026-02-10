@@ -11,11 +11,16 @@ $userId = $_SESSION['user_id'];
 
 // Check if student has a team
 $myTeam = null;
+$isLeader = false;
 $teamCheck = mysqli_prepare($conn, "SELECT t.* FROM team_members tm JOIN teams t ON tm.team_id = t.id WHERE tm.user_id = ?");
 mysqli_stmt_bind_param($teamCheck, "i", $userId);
 mysqli_stmt_execute($teamCheck);
 $myTeam = mysqli_fetch_assoc(mysqli_stmt_get_result($teamCheck));
 mysqli_stmt_close($teamCheck);
+
+if ($myTeam) {
+    $isLeader = ((int)$myTeam['leader_id'] === (int)$userId);
+}
 
 // Get team members for display
 $teamMemberNames = '';
@@ -76,6 +81,13 @@ unset($_SESSION['success'], $_SESSION['error']);
                     <h2 style="margin-bottom:0.5rem;">Team Required</h2>
                     <p style="color:var(--text-muted);max-width:400px;margin:0 auto 1.5rem;">You must be part of a team to submit projects for SPARK'26. Create a new team or join an existing one.</p>
                     <a href="myTeam.php" class="btn-primary"><i class="ri-team-line"></i> Go to My Team</a>
+                </div>
+                <?php elseif (!$isLeader): ?>
+                <div style="text-align:center;padding:3rem 1rem;">
+                    <i class="ri-lock-line" style="font-size:4rem;color:var(--text-muted);margin-bottom:1rem;display:block;"></i>
+                    <h2 style="margin-bottom:0.5rem;">Leader Access Only</h2>
+                    <p style="color:var(--text-muted);max-width:450px;margin:0 auto 1.5rem;">Only the team leader can submit projects. You can view your team's projects from the My Projects page.</p>
+                    <a href="myProjects.php" class="btn-primary"><i class="ri-folder-line"></i> View Projects</a>
                 </div>
                 <?php else: ?>
 

@@ -11,11 +11,15 @@ $userId = $_SESSION['user_id'];
 
 // Check if student is in a team
 $myTeamId = null;
-$teamCheck = mysqli_prepare($conn, "SELECT t.id FROM team_members tm JOIN teams t ON tm.team_id = t.id WHERE tm.user_id = ?");
+$isLeader = false;
+$teamCheck = mysqli_prepare($conn, "SELECT t.id, t.leader_id FROM team_members tm JOIN teams t ON tm.team_id = t.id WHERE tm.user_id = ?");
 mysqli_stmt_bind_param($teamCheck, "i", $userId);
 mysqli_stmt_execute($teamCheck);
 $teamRow = mysqli_fetch_assoc(mysqli_stmt_get_result($teamCheck));
-if ($teamRow) $myTeamId = $teamRow['id'];
+if ($teamRow) {
+    $myTeamId = $teamRow['id'];
+    $isLeader = ((int)$teamRow['leader_id'] === (int)$userId);
+}
 mysqli_stmt_close($teamCheck);
 
 // Fetch team's projects (all projects linked to the team) or individual projects if no team
@@ -86,9 +90,13 @@ unset($_SESSION['success'], $_SESSION['error']);
 
                 <div class="content-header">
                     <h2>Your Submitted Projects</h2>
+                    <?php if ($isLeader): ?>
                     <a href="submitProject.php" class="btn-primary">
                         <i class="ri-add-line"></i> New Project
                     </a>
+                    <?php else: ?>
+                    <span style="font-size:0.85rem;color:var(--text-muted);background:var(--bg-surface);padding:0.4rem 0.8rem;border-radius:8px;"><i class="ri-eye-line"></i> View Only (Leader submits projects)</span>
+                    <?php endif; ?>
                 </div>
 
                 <div class="projects-grid">
@@ -131,7 +139,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                     <?php endif; ?>
                                 </div>
                                 <?php endif; ?>
-                                <?php if ($project['status'] === 'pending'): ?>
+                                <?php if ($isLeader && $project['status'] === 'pending'): ?>
                                 <form action="sparkBackend.php" method="POST" style="margin-top:0.75rem;" class="confirm-delete-form">
                                     <input type="hidden" name="action" value="delete_project">
                                     <input type="hidden" name="project_id" value="<?php echo $project['id']; ?>">

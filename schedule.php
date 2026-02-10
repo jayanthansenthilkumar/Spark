@@ -65,7 +65,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <p>Important dates and deadlines for the event</p>
                         </div>
                         <?php if ($canManage): ?>
-                        <button class="btn-primary" onclick="document.getElementById('scheduleModal').style.display='flex'">
+                        <button class="btn-primary" onclick="showAddEvent()">
                             <i class="ri-add-line"></i> Add Event
                         </button>
                         <?php endif; ?>
@@ -105,43 +105,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 </div>
 
                 <?php if ($canManage): ?>
-                <!-- Add Event Modal -->
-                <div class="compose-modal" id="scheduleModal" style="display:none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Add Schedule Event</h3>
-                            <button class="btn-icon" onclick="document.getElementById('scheduleModal').style.display='none'"><i class="ri-close-line"></i></button>
-                        </div>
-                        <form action="sparkBackend.php" method="POST">
-                            <input type="hidden" name="action" value="add_schedule">
-                            <div class="form-group">
-                                <label>Event Title</label>
-                                <input type="text" name="eventTitle" required placeholder="Event title">
-                            </div>
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea name="eventDescription" rows="3" placeholder="Event description"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Date & Time</label>
-                                <input type="datetime-local" name="eventDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Event Type</label>
-                                <select name="eventType">
-                                    <option value="general">General</option>
-                                    <option value="milestone">Milestone</option>
-                                    <option value="deadline">Deadline</option>
-                                    <option value="event">Event</option>
-                                </select>
-                            </div>
-                            <div class="modal-actions">
-                                <button type="button" class="btn-secondary" onclick="document.getElementById('scheduleModal').style.display='none'">Cancel</button>
-                                <button type="submit" class="btn-primary">Add Event</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <!-- Schedule modal handled via SweetAlert -->
                 <?php endif; ?>
             </div>
         </main>
@@ -149,19 +113,93 @@ unset($_SESSION['success'], $_SESSION['error']);
 
     <script src="assets/js/script.js"></script>
     <script>
+    function showAddEvent() {
+        Swal.fire({
+            title: 'Add Schedule Event',
+            html: `
+                <div style="text-align:left;">
+                    <div class="form-group" style="margin-bottom:0.75rem;">
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Event Title *</label>
+                        <input id="swal-eTitle" class="swal2-input" placeholder="Event title" style="margin:0;width:100%;box-sizing:border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0.75rem;">
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Description</label>
+                        <textarea id="swal-eDesc" class="swal2-textarea" placeholder="Event description" style="margin:0;width:100%;box-sizing:border-box;"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0.75rem;">
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Date & Time *</label>
+                        <input id="swal-eDate" type="datetime-local" class="swal2-input" style="margin:0;width:100%;box-sizing:border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:0.3rem;">Event Type</label>
+                        <select id="swal-eType" class="swal2-select" style="margin:0;width:100%;padding:0.5rem;border:1px solid #d1d5db;border-radius:6px;">
+                            <option value="general">General</option>
+                            <option value="milestone">Milestone</option>
+                            <option value="deadline">Deadline</option>
+                            <option value="event">Event</option>
+                        </select>
+                    </div>
+                </div>
+            `,
+            confirmButtonText: '<i class="ri-calendar-event-line"></i> Add Event',
+            confirmButtonColor: '#2563eb',
+            showCancelButton: true,
+            cancelButtonColor: '#6b7280',
+            width: '500px',
+            focusConfirm: false,
+            preConfirm: () => {
+                const title = document.getElementById('swal-eTitle').value.trim();
+                const date = document.getElementById('swal-eDate').value;
+                if (!title || !date) {
+                    Swal.showValidationMessage('Title and Date are required');
+                    return false;
+                }
+                return {
+                    title: title,
+                    description: document.getElementById('swal-eDesc').value.trim(),
+                    date: date,
+                    type: document.getElementById('swal-eType').value
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const d = result.value;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'sparkBackend.php';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="add_schedule">
+                    <input type="hidden" name="eventTitle" value="${escapeHtml(d.title)}">
+                    <input type="hidden" name="eventDescription" value="${escapeHtml(d.description)}">
+                    <input type="hidden" name="eventDate" value="${escapeHtml(d.date)}">
+                    <input type="hidden" name="eventType" value="${escapeHtml(d.type)}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     <?php if ($successMsg): ?>
     Swal.fire({ icon: 'success', title: 'Success!', text: '<?php echo addslashes($successMsg); ?>', confirmButtonColor: '#2563eb', timer: 3000, timerProgressBar: true });
     <?php endif; ?>
     <?php if ($errorMsg): ?>
     Swal.fire({ icon: 'error', title: 'Oops!', text: '<?php echo addslashes($errorMsg); ?>', confirmButtonColor: '#2563eb' });
     <?php endif; ?>
+
     document.querySelectorAll('.confirm-delete-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formEl = this;
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'This action cannot be undone.',
+                title: 'Delete Event?',
+                text: 'This scheduled event will be permanently removed.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
