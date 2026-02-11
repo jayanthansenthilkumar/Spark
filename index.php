@@ -315,38 +315,59 @@ $featuredAnnouncement = mysqli_fetch_assoc($featuredAnn);
             <div class="sponsors-grid">
                 <div class="sponsor-card">
                     <div class="sponsor-logo">
-                        <i class="ri-cloud-line"></i>
+                        <i class="ri-building-2-line"></i>
                     </div>
-                    <h3>CloudNine Tech</h3>
-                    <p>Cloud Infrastructure</p>
+                    <h3>Syraa Groups</h3>
+                    <p>Technical Partner</p>
                 </div>
                 <div class="sponsor-card">
                     <div class="sponsor-logo">
-                        <i class="ri-robot-line"></i>
+                        <i class="ri-book-open-line"></i>
                     </div>
-                    <h3>AI Nexus</h3>
-                    <p>Artificial Intelligence</p>
+                    <h3>FewInfos</h3>
+                    <p>Knowledge Partner</p>
                 </div>
                 <div class="sponsor-card">
                     <div class="sponsor-logo">
                         <i class="ri-code-s-slash-line"></i>
                     </div>
-                    <h3>DevStack Labs</h3>
-                    <p>Developer Tools</p>
+                    <h3>Prisol Technologies</h3>
+                    <p>Tech Solution Partner</p>
                 </div>
                 <div class="sponsor-card">
                     <div class="sponsor-logo">
-                        <i class="ri-shield-check-line"></i>
+                        <i class="ri-rocket-line"></i>
                     </div>
-                    <h3>CyberGuard</h3>
-                    <p>Cybersecurity</p>
+                    <h3>AFDC</h3>
+                    <p>Startup Partner</p>
                 </div>
                 <div class="sponsor-card">
                     <div class="sponsor-logo">
-                        <i class="ri-database-2-line"></i>
+                        <i class="ri-hand-heart-line"></i>
                     </div>
-                    <h3>DataFlow Inc</h3>
-                    <p>Data Analytics</p>
+                    <h3>SignBridge AI</h3>
+                    <p>Accessibility Partner</p>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">
+                        <i class="ri-flashlight-line"></i>
+                    </div>
+                    <h3>Nexis</h3>
+                    <p>Startup Partner</p>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">
+                        <i class="ri-building-4-line"></i>
+                    </div>
+                    <h3>SENSAN</h3>
+                    <p>Startup Partner</p>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">
+                        <i class="ri-brain-line"></i>
+                    </div>
+                    <h3>Thinkloop AI</h3>
+                    <p>AI Innovation Partner</p>
                 </div>
             </div>
         </div>
