@@ -83,8 +83,12 @@
 
         // ── Quick Suggestions ────────────────────────────
 
-        function showSuggestions() {
-            var suggestions = [
+        function showSuggestions(suggestions) {
+            // Remove any existing suggestions first
+            $('.chat-suggestions').remove();
+
+            // Use defaults for initial open, or provided data
+            var items = suggestions || [
                 { icon: 'ri-user-add-line', text: 'Register' },
                 { icon: 'ri-login-box-line', text: 'Login' },
                 { icon: 'ri-team-line', text: 'Create Team' },
@@ -92,7 +96,7 @@
             ];
 
             var $wrap = $('<div>').addClass('chat-suggestions');
-            suggestions.forEach(function (s) {
+            items.forEach(function (s) {
                 $('<button>')
                     .addClass('chat-suggestion-btn')
                     .html('<i class="' + s.icon + '"></i> ' + s.text)
@@ -224,8 +228,9 @@
             var message = text || $chatInput.val().trim();
             if (!message || isProcessing) return;
 
-            // Remove suggestions on first real message
+            // Remove suggestions and options on first real message
             $('.chat-suggestions').remove();
+            $('.chat-options').remove();
 
             if (!isHidden) {
                 appendUserMessage(message);
@@ -285,6 +290,10 @@
                     // After message streams in, render options if any
                     if (response.options && Array.isArray(response.options)) {
                         renderOptions(response.options);
+                    }
+                    // Show dynamic suggestions if provided
+                    if (response.suggestions && Array.isArray(response.suggestions)) {
+                        showSuggestions(response.suggestions);
                     }
                 });
             } else if (response.options && Array.isArray(response.options)) {

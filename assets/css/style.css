@@ -346,7 +346,7 @@ ul {
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
@@ -566,7 +566,7 @@ ul {
 /* Schedule Grid instead of Timeline */
 .schedule-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
@@ -960,57 +960,71 @@ ul {
   display: none;
 }
 
-/* Mobile Menu Overlay - sits outside navbar to avoid backdrop-filter issues */
+/* Mobile Menu Overlay - Floating card panel */
 .mobile-menu-overlay {
-  display: none;
+  display: flex;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #ffffff;
+  top: 80px;
+  right: 16px;
+  left: 16px;
+  width: auto;
+  height: auto;
+  max-height: 0;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
+  align-items: stretch;
+  gap: 0;
   z-index: 9999;
-  padding: 2rem;
+  padding: 0;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.3s ease,
+              transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              padding 0.3s ease;
+  pointer-events: none;
 }
 
 .mobile-menu-overlay.mobile-open {
-  display: flex;
+  max-height: 420px;
+  opacity: 1;
+  transform: translateY(0);
+  padding: 0.75rem 0;
+  pointer-events: auto;
 }
 
 .mobile-menu-overlay .mobile-menu-close {
   display: none;
-  position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: var(--text-main);
-  padding: 0.5rem;
 }
 
 .mobile-menu-overlay.mobile-open .mobile-menu-close {
-  display: block;
+  display: none;
 }
 
 .mobile-menu-overlay .nav-link {
-  font-size: 1.25rem;
-  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  padding: 0.85rem 1.5rem;
   font-weight: 600;
   color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-radius: 0;
 }
 
 .mobile-menu-overlay .nav-link:hover {
   color: var(--primary);
+  background: rgba(79, 70, 229, 0.06);
 }
 
 .mobile-menu-overlay .btn-primary {
   display: inline-block;
+  margin: 0.5rem 1.25rem 0.75rem;
+  text-align: center;
 }
 
 /* Desktop nav links - only visible on desktop */
@@ -1075,40 +1089,121 @@ ul {
   }
 
   .features-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1rem !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.4rem !important;
+  }
+
+  .feature-card {
+    padding: 0.6rem !important;
+    border-radius: 8px !important;
+  }
+
+  .f-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-card h3 {
+    font-size: 0.65rem;
+    margin-bottom: 0.2rem;
+    line-height: 1.2;
+  }
+
+  .feature-card p {
+    font-size: 0.55rem;
+    line-height: 1.35;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .stats-strip {
+    background: white;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
 
   .stats-grid {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: 0.25rem !important;
-    justify-content: space-between !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem 0.5rem !important;
+    justify-content: center !important;
+    text-align: center;
   }
 
   .stat-item {
-    flex: 1;
+    flex: unset;
     min-width: 0;
+    padding: 0.75rem 0.5rem;
+    background: var(--bg-surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
   }
 
   .stat-item h3 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    line-height: 1.2;
   }
 
   .stat-item p {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     letter-spacing: 0.5px;
+    margin-top: 0.15rem;
   }
 
   .schedule-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1rem !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.5rem !important;
   }
 
   .schedule-card {
     flex-direction: column;
-    gap: 0.75rem;
-    padding: 1rem;
+    gap: 0.4rem;
+    padding: 0.6rem;
+    border-radius: 10px;
+  }
+
+  .sc-date {
+    padding: 0.4rem 0.5rem;
+    border-radius: 8px;
+    min-width: unset;
+    flex-direction: row;
+    gap: 0.3rem;
+  }
+
+  .sc-day {
+    font-size: 0.85rem;
+  }
+
+  .sc-month {
+    font-size: 0.6rem;
+  }
+
+  .sc-content h3 {
+    font-size: 0.7rem;
+    margin-bottom: 0.2rem;
+    line-height: 1.3;
+  }
+
+  .sc-content p {
+    font-size: 0.6rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .sc-status {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.4rem;
   }
 
   .sponsors-grid {
@@ -4662,14 +4757,14 @@ ul {
   border-color: #ef4444;
 }
 
-/* Quick suggestions shown at start */
+/* Dynamic suggestions after each response */
 .chat-suggestions {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 4px 0;
+  padding: 6px 0;
   align-self: flex-start;
-  animation: msgSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  animation: msgSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .chat-suggestion-btn {
@@ -4680,12 +4775,31 @@ ul {
   color: #475569;
   font-size: 0.78rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   font-weight: 500;
   font-family: inherit;
   display: flex;
   align-items: center;
   gap: 4px;
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+  animation: suggestionPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.chat-suggestion-btn:nth-child(1) { animation-delay: 0.05s; }
+.chat-suggestion-btn:nth-child(2) { animation-delay: 0.12s; }
+.chat-suggestion-btn:nth-child(3) { animation-delay: 0.19s; }
+.chat-suggestion-btn:nth-child(4) { animation-delay: 0.26s; }
+
+@keyframes suggestionPop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .chat-suggestion-btn:hover {
@@ -4755,7 +4869,8 @@ ul {
 @media (max-width: 480px) {
   .chat-window {
     width: calc(100vw - 24px);
-    height: calc(100vh - 120px);
+    height: 60vh;
+    max-height: 600px;
     bottom: 80px;
     right: -18px;
     border-radius: 16px;

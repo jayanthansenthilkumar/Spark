@@ -167,7 +167,15 @@ switch ($action) {
         if (in_array($lowerMsg, ['cancel', 'stop', 'exit', 'quit'])) {
             $_SESSION['chat_state'] = 'IDLE';
             $_SESSION['chat_data'] = [];
-            echo json_encode(['reply' => "Action cancelled. How else can I help you?", 'action' => 'reset_ui']);
+            echo json_encode([
+                'reply' => "Action cancelled. How else can I help you?",
+                'action' => 'reset_ui',
+                'suggestions' => [
+                    ['icon' => 'ri-questionnaire-line', 'text' => 'Help'],
+                    ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                    ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                ]
+            ]);
             exit;
         }
 
@@ -181,6 +189,10 @@ switch ($action) {
                 if ($message === '__check_notifications__') {
                     if (!isset($_SESSION['user_id'])) {
                         $response['reply'] = "Please login to check notifications.";
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-login-box-line', 'text' => 'Login'],
+                            ['icon' => 'ri-user-add-line', 'text' => 'Register']
+                        ];
                     } else {
                         // Check for pending invitations
                         $invStmt = mysqli_prepare($conn, "SELECT ti.id, t.team_name, ti.team_id FROM team_invitations ti JOIN teams t ON ti.team_id = t.id WHERE ti.invited_user_id = ? AND ti.status = 'pending' LIMIT 1");
@@ -198,6 +210,11 @@ switch ($action) {
                             $response['options'] = ['Accept', 'Decline'];
                         } else {
                             $response['reply'] = "You have no new notifications involved with teams.";
+                            $response['suggestions'] = [
+                                ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                                ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                                ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                            ];
                         }
                     }
                 }
@@ -206,6 +223,11 @@ switch ($action) {
                 elseif (strpos($lowerMsg, 'register') !== false || strpos($lowerMsg, 'signup') !== false) {
                     if (isset($_SESSION['user_id'])) {
                         $response['reply'] = "You are already logged in as " . $_SESSION['name'] . ". Please logout first to register a new account.";
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                            ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                            ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                        ];
                     } else {
                         $_SESSION['chat_state'] = 'REG_ASK_NAME';
                         $_SESSION['chat_data'] = [];
@@ -216,6 +238,11 @@ switch ($action) {
                 elseif (strpos($lowerMsg, 'login') !== false || strpos($lowerMsg, 'signin') !== false) {
                     if (isset($_SESSION['user_id'])) {
                         $response['reply'] = "You are already logged in as " . $_SESSION['name'] . ".";
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                            ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                            ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                        ];
                     } else {
                         $_SESSION['chat_state'] = 'LOGIN_ASK_USER';
                         $_SESSION['chat_data'] = [];
@@ -227,11 +254,20 @@ switch ($action) {
                 elseif (strpos($lowerMsg, 'create team') !== false) {
                     if (!isset($_SESSION['user_id'])) {
                         $response['reply'] = "You need to login first to create a team. Type 'login' to start.";
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-login-box-line', 'text' => 'Login'],
+                            ['icon' => 'ri-user-add-line', 'text' => 'Register']
+                        ];
                     } else {
                         // Check if already in a team
                         $chk = mysqli_query($conn, "SELECT id FROM team_members WHERE user_id = " . $_SESSION['user_id']);
                         if (mysqli_num_rows($chk) > 0) {
                             $response['reply'] = "You are already part of a team. You cannot create another one.";
+                            $response['suggestions'] = [
+                                ['icon' => 'ri-mail-send-line', 'text' => 'Invite'],
+                                ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                                ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                            ];
                         } else {
                             $_SESSION['chat_state'] = 'TEAM_CREATE_ASK_NAME';
                             $_SESSION['chat_data'] = [];
@@ -243,11 +279,20 @@ switch ($action) {
                 elseif (strpos($lowerMsg, 'join team') !== false) {
                     if (!isset($_SESSION['user_id'])) {
                         $response['reply'] = "Please login first to join a team.";
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-login-box-line', 'text' => 'Login'],
+                            ['icon' => 'ri-user-add-line', 'text' => 'Register']
+                        ];
                     } else {
                         // Check if already in a team
                         $chk = mysqli_query($conn, "SELECT id FROM team_members WHERE user_id = " . $_SESSION['user_id']);
                         if (mysqli_num_rows($chk) > 0) {
                             $response['reply'] = "You are already part of a team.";
+                            $response['suggestions'] = [
+                                ['icon' => 'ri-mail-send-line', 'text' => 'Invite'],
+                                ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                                ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                            ];
                         } else {
                             $_SESSION['chat_state'] = 'TEAM_JOIN_ASK_CODE';
                             $response['reply'] = "Please enter the **Team Invite Code** shared by your leader.";
@@ -258,11 +303,20 @@ switch ($action) {
                 elseif (strpos($lowerMsg, 'invite') !== false) {
                     if (!isset($_SESSION['user_id'])) {
                         $response['reply'] = "Please login first.";
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-login-box-line', 'text' => 'Login'],
+                            ['icon' => 'ri-user-add-line', 'text' => 'Register']
+                        ];
                     } else {
                         // Check leader status
                         $chk = mysqli_query($conn, "SELECT id FROM teams WHERE leader_id = " . $_SESSION['user_id']);
                         if (mysqli_num_rows($chk) == 0) {
                             $response['reply'] = "Only team leaders can invite members.";
+                            $response['suggestions'] = [
+                                ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                                ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                                ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                            ];
                         } else {
                             $_SESSION['chat_state'] = 'TEAM_INVITE_ASK_USER';
                             $response['reply'] = "Who would you like to invite? Enter their **Username** or **Email**.";
@@ -279,18 +333,68 @@ switch ($action) {
                             "Hi $user! Need help with SPARK'26?"
                         ];
                         $response['reply'] = $greetings[array_rand($greetings)];
+                        if (isset($_SESSION['user_id'])) {
+                            $response['suggestions'] = [
+                                ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                                ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                                ['icon' => 'ri-compass-line', 'text' => 'Tracks'],
+                                ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                            ];
+                        } else {
+                            $response['suggestions'] = [
+                                ['icon' => 'ri-user-add-line', 'text' => 'Register'],
+                                ['icon' => 'ri-login-box-line', 'text' => 'Login'],
+                                ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                                ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                            ];
+                        }
                     } elseif (preg_match('/(thank|thanks|thx)/', $lowerMsg)) {
                         $response['reply'] = "You're welcome! Let me know if you need anything else. 😊";
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                            ['icon' => 'ri-compass-line', 'text' => 'Tracks'],
+                            ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                        ];
                     } elseif (preg_match('/(help|what can you do|options|menu)/', $lowerMsg)) {
                         $response['reply'] = "Here's what I can do:\n• **Register** — Create a new account\n• **Login** — Sign in to your account\n• **Create Team** — Start a new team\n• **Join Team** — Join with invite code\n• **Invite** — Invite a member\n• **Schedule** — View event timeline\n• **Tracks** — Browse project tracks";
+                        if (isset($_SESSION['user_id'])) {
+                            $response['suggestions'] = [
+                                ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                                ['icon' => 'ri-group-line', 'text' => 'Join Team'],
+                                ['icon' => 'ri-mail-send-line', 'text' => 'Invite'],
+                                ['icon' => 'ri-calendar-line', 'text' => 'Schedule']
+                            ];
+                        } else {
+                            $response['suggestions'] = [
+                                ['icon' => 'ri-user-add-line', 'text' => 'Register'],
+                                ['icon' => 'ri-login-box-line', 'text' => 'Login'],
+                                ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                                ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                            ];
+                        }
                     } elseif (strpos($lowerMsg, 'schedule') !== false || strpos($lowerMsg, 'date') !== false || strpos($lowerMsg, 'when') !== false) {
                         $response['reply'] = "📅 SPARK'26 is scheduled for **Feb 15, 2026**. Let me scroll you to the timeline!";
                         $response['action'] = 'scroll_schedule';
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-compass-line', 'text' => 'Tracks'],
+                            ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                            ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                        ];
                     } elseif (strpos($lowerMsg, 'track') !== false || strpos($lowerMsg, 'topic') !== false || strpos($lowerMsg, 'domain') !== false) {
                         $response['reply'] = "We have 5 tracks: **AI/ML**, **Software Dev**, **HealthTech**, **Green Energy**, and **Open Innovation**. Let me show you!";
                         $response['action'] = 'scroll_tracks';
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                            ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                            ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                        ];
                     } elseif (preg_match('/(team|squad|group)/', $lowerMsg)) {
                         $response['reply'] = "I can help with teams! Try:\n• **Create Team** — Start a new one\n• **Join Team** — Use an invite code\n• **Invite** — Add members to your team";
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                            ['icon' => 'ri-group-line', 'text' => 'Join Team'],
+                            ['icon' => 'ri-mail-send-line', 'text' => 'Invite']
+                        ];
                     } elseif (preg_match('/(bye|goodbye|see you|later)/', $lowerMsg)) {
                         $response['reply'] = "Goodbye! Good luck with SPARK'26! 🚀";
                     } else {
@@ -300,6 +404,11 @@ switch ($action) {
                             "I'm still learning! Try commands like **Register**, **Login**, **Create Team**, or **Schedule**."
                         ];
                         $response['reply'] = $fallbacks[array_rand($fallbacks)];
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-questionnaire-line', 'text' => 'Help'],
+                            ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                            ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                        ];
                     }
                 }
                 break;
@@ -321,11 +430,21 @@ switch ($action) {
                     $response['reply'] = "🎉 Accepted! You are now a member of **" . $_SESSION['chat_data']['team_name'] . "**. Reloading dashboard...";
                     $response['action'] = 'reload';
                     $_SESSION['chat_state'] = 'IDLE';
+                    $response['suggestions'] = [
+                        ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                        ['icon' => 'ri-compass-line', 'text' => 'Tracks'],
+                        ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                    ];
                 } elseif ($lowerMsg === 'decline') {
                     $inviteId = $_SESSION['chat_data']['invite_id'];
                     mysqli_query($conn, "UPDATE team_invitations SET status = 'declined' WHERE id = $inviteId");
                     $response['reply'] = "Invitation declined.";
                     $_SESSION['chat_state'] = 'IDLE';
+                    $response['suggestions'] = [
+                        ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                        ['icon' => 'ri-group-line', 'text' => 'Join Team'],
+                        ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                    ];
                 } else {
                     $response['reply'] = "Please type **Accept** or **Decline**.";
                     $response['options'] = ['Accept', 'Decline'];
@@ -486,6 +605,11 @@ switch ($action) {
                     $_SESSION['chat_state'] = 'IDLE';
                     $_SESSION['chat_data'] = [];
                     $response['reply'] = "Registration Successful! 🎉 Type 'Login' to sign in to your new account.";
+                    $response['suggestions'] = [
+                        ['icon' => 'ri-login-box-line', 'text' => 'Login'],
+                        ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                        ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                    ];
                 } else {
                     $response['reply'] = "An error occurred during registration. Please try again later or use the main register page.";
                     $_SESSION['chat_state'] = 'IDLE';
@@ -531,10 +655,20 @@ switch ($action) {
                         $_SESSION['chat_data'] = [];
                         $response['reply'] = "Welcome back, " . $user['name'] . "! You are now logged in. ✨";
                         $response['action'] = 'reload'; // Reload page to update UI
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                            ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                            ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                        ];
                     }
                 } else {
                     $response['reply'] = "Invalid credentials. Please try logging in again.";
                     $_SESSION['chat_state'] = 'IDLE';
+                    $response['suggestions'] = [
+                        ['icon' => 'ri-login-box-line', 'text' => 'Login'],
+                        ['icon' => 'ri-user-add-line', 'text' => 'Register'],
+                        ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                    ];
                 }
                 break;
 
@@ -570,9 +704,18 @@ switch ($action) {
 
                     $_SESSION['chat_state'] = 'IDLE';
                     $response['reply'] = "Team '$tName' created successfully! 🚀\nYour Team Code is **$teamCode**. Share this with members to join.";
+                    $response['suggestions'] = [
+                        ['icon' => 'ri-mail-send-line', 'text' => 'Invite'],
+                        ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                        ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                    ];
                 } else {
                     $_SESSION['chat_state'] = 'IDLE';
                     $response['reply'] = "Failed to create team. Please try again.";
+                    $response['suggestions'] = [
+                        ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                        ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                    ];
                 }
                 break;
 
@@ -591,12 +734,22 @@ switch ($action) {
                 if (!$team) {
                     $response['reply'] = "Invalid or closed team code. Type 'join team' to try again.";
                     $_SESSION['chat_state'] = 'IDLE';
+                    $response['suggestions'] = [
+                        ['icon' => 'ri-group-line', 'text' => 'Join Team'],
+                        ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                        ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                    ];
                 } else {
                     // Check max members
                     $cnt = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM team_members WHERE team_id = " . $team['id']))['c'];
                     if ($cnt >= $team['max_members']) {
                         $response['reply'] = "That team is full.";
                         $_SESSION['chat_state'] = 'IDLE';
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-group-line', 'text' => 'Join Team'],
+                            ['icon' => 'ri-team-line', 'text' => 'Create Team'],
+                            ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                        ];
                     } else {
                         mysqli_query($conn, "INSERT INTO team_members (team_id, user_id, role) VALUES (" . $team['id'] . ", $userId, 'member')");
 
@@ -607,6 +760,11 @@ switch ($action) {
 
                         $response['reply'] = "Success! You have joined team **" . $team['team_name'] . "**.";
                         $_SESSION['chat_state'] = 'IDLE';
+                        $response['suggestions'] = [
+                            ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                            ['icon' => 'ri-compass-line', 'text' => 'Tracks'],
+                            ['icon' => 'ri-questionnaire-line', 'text' => 'Help']
+                        ];
                     }
                 }
                 break;
@@ -659,6 +817,11 @@ switch ($action) {
                                 if (mysqli_stmt_execute($ins)) {
                                     $response['reply'] = "Invitation sent to $target! They will see it in their dashboard.";
                                     $_SESSION['chat_state'] = 'IDLE';
+                                    $response['suggestions'] = [
+                                        ['icon' => 'ri-mail-send-line', 'text' => 'Invite'],
+                                        ['icon' => 'ri-calendar-line', 'text' => 'Schedule'],
+                                        ['icon' => 'ri-compass-line', 'text' => 'Tracks']
+                                    ];
                                 } else {
                                     $response['reply'] = "Failed to send invitation. Please try again.";
                                 }
