@@ -117,9 +117,9 @@ $featuredAnnouncement = mysqli_fetch_assoc($featuredAnn);
                 </p>
                 <div class="hero-actions">
                     <?php if (!$isLoggedIn): ?>
-                        <a href="register.php" class="btn-primary">Submit Project</a>
+                        <a href="register.php" class="btn-outline">Submit Project</a>
                     <?php else: ?>
-                        <a href="<?php echo $dashboardLink; ?>" class="btn-primary">Manage Projects</a>
+                        <a href="<?php echo $dashboardLink; ?>" class="btn-outline">Manage Projects</a>
                     <?php endif; ?>
                     <a href="#about" class="btn-outline">View Guidelines</a>
                 </div>
