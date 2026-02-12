@@ -1627,6 +1627,151 @@ ul {
   width: calc(100% - var(--sidebar-width));
 }
 
+/* Logo Strip Above Navbar */
+.logo-strip {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 2rem;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.logo-strip-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.logo-strip-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  line-height: 0;
+}
+
+.logo-strip-item img {
+  display: block;
+  object-fit: contain;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Individual logo sizing for balanced visual weight */
+.logo-mkce img {
+  height: 48px;
+}
+
+.logo-naac img {
+  height: 48px;
+}
+
+.logo-nirf img {
+  height: 40px;
+}
+
+.logo-25 img {
+  height: 52px;
+}
+
+.logo-kr img {
+  height: 32px;
+}
+
+/* Responsive: tablet / sidebar collapse breakpoint */
+@media (max-width: 900px) {
+  .logo-strip {
+    padding: 0.4rem 1rem;
+  }
+
+  .logo-strip-inner {
+    gap: 1.5rem;
+  }
+
+  .logo-mkce img { height: 34px; }
+  .logo-naac img { height: 34px; }
+  .logo-nirf img { height: 28px; }
+  .logo-25 img { height: 38px; }
+  .logo-kr img { height: 24px; }
+}
+
+/* Responsive: small phones */
+@media (max-width: 480px) {
+  .logo-strip {
+    padding: 0.35rem 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .logo-strip-inner {
+    gap: 0.75rem;
+    min-width: max-content;
+  }
+
+  .logo-mkce img { height: 24px; }
+  .logo-naac img { height: 24px; }
+  .logo-nirf img { height: 20px; }
+  .logo-25 img { height: 26px; }
+  .logo-kr img { height: 18px; }
+}
+
+/* Landing Page Logo Strip (fixed above navbar) */
+.landing-logo-strip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 2rem;
+  z-index: 1001;
+  box-sizing: border-box;
+}
+
+.landing-logo-strip ~ .navbar {
+  top: 60px;
+}
+
+.landing-logo-strip ~ .navbar ~ .mobile-menu-overlay ~ .hero,
+.landing-logo-strip ~ .navbar ~ .hero {
+  padding-top: 12rem;
+}
+
+@media (max-width: 900px) {
+  .landing-logo-strip {
+    padding: 0.4rem 1rem;
+  }
+
+  .landing-logo-strip ~ .navbar {
+    top: 50px;
+  }
+
+  .landing-logo-strip ~ .navbar ~ .mobile-menu-overlay ~ .hero,
+  .landing-logo-strip ~ .navbar ~ .hero {
+    padding-top: 11rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-logo-strip {
+    padding: 0.35rem 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .landing-logo-strip ~ .navbar {
+    top: 42px;
+  }
+
+  .landing-logo-strip ~ .navbar ~ .mobile-menu-overlay ~ .hero,
+  .landing-logo-strip ~ .navbar ~ .hero {
+    padding-top: 10rem;
+  }
+}
+
 /* Dashboard Header */
 .dashboard-header {
   min-height: var(--header-height);

@@ -65,6 +65,27 @@ if (isset($pendingInviteCount)) {
     }
 }
 ?>
+<!-- Logo Strip Above Navbar -->
+<div class="logo-strip">
+    <div class="logo-strip-inner">
+        <a href="https://mkce.ac.in" target="_blank" class="logo-strip-item logo-mkce">
+            <img src="assets/images/mkce.png" alt="M. Kumarasamy College of Engineering">
+        </a>
+        <a href="https://www.naac.gov.in" target="_blank" class="logo-strip-item logo-naac">
+            <img src="assets/images/naac.png" alt="NAAC Accredited with Grade A">
+        </a>
+        <a href="https://www.nirfindia.org" target="_blank" class="logo-strip-item logo-nirf">
+            <img src="assets/images/nirf.png" alt="NIRF Ranking">
+        </a>
+        <div class="logo-strip-item logo-25">
+            <img src="assets/images/25.png" alt="MKCE 25 Years of Excellence">
+        </div>
+        <div class="logo-strip-item logo-kr">
+            <img src="assets/images/kr.jpg" alt="KR Group">
+        </div>
+    </div>
+</div>
+
 <header class="dashboard-header">
     <div class="header-left">
         <button class="mobile-toggle" onclick="toggleSidebar()">
