@@ -32,6 +32,7 @@
                         { icon: 'ri-folder-line', text: 'My Projects' },
                         { icon: 'ri-team-line', text: 'My Team' },
                         { icon: 'ri-calendar-line', text: 'Schedule' },
+                        { icon: 'ri-time-line', text: 'Countdown' },
                         { icon: 'ri-questionnaire-line', text: 'Help' }
                     ];
                 case 'departmentcoordinator':
@@ -39,6 +40,7 @@
                         { icon: 'ri-checkbox-circle-line', text: 'Pending Reviews' },
                         { icon: 'ri-bar-chart-line', text: 'Department Stats' },
                         { icon: 'ri-group-line', text: 'Students' },
+                        { icon: 'ri-trophy-line', text: 'Top Projects' },
                         { icon: 'ri-questionnaire-line', text: 'Help' }
                     ];
                 case 'admin':
@@ -46,6 +48,7 @@
                         { icon: 'ri-pie-chart-line', text: 'Analytics' },
                         { icon: 'ri-folder-line', text: 'All Projects' },
                         { icon: 'ri-shield-user-line', text: 'Coordinators' },
+                        { icon: 'ri-history-line', text: 'Recent Activity' },
                         { icon: 'ri-questionnaire-line', text: 'Help' }
                     ];
                 case 'studentaffairs':
@@ -53,6 +56,7 @@
                         { icon: 'ri-folder-line', text: 'All Projects' },
                         { icon: 'ri-checkbox-circle-line', text: 'Approvals' },
                         { icon: 'ri-pie-chart-line', text: 'Analytics' },
+                        { icon: 'ri-history-line', text: 'Recent Activity' },
                         { icon: 'ri-questionnaire-line', text: 'Help' }
                     ];
                 default:
