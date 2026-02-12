@@ -51,6 +51,7 @@ if (isset($_SESSION['success'])) {
 </head>
 
 <body>
+    <?php include 'includes/loader.php'; ?>
     <!-- Register Form -->
     <div class="auth-container">
         <div class="auth-grid-split">

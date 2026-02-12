@@ -39,6 +39,7 @@ $upcomingEvents = mysqli_query($conn, "SELECT * FROM schedule WHERE event_date >
 </head>
 
 <body>
+    <?php include 'includes/loader.php'; ?>
     <div class="dashboard-container">
         <?php include 'includes/sidebar.php'; ?>
 

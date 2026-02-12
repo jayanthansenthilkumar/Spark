@@ -580,17 +580,9 @@
      EVENT LISTENERS
   ========================================== */
 
-  // ==== PAGE LOAD — welcome chime when DOM is ready ====
-  if (document.readyState === 'loading') {
-    startLoadingSound();
-    document.addEventListener('DOMContentLoaded', function () {
-      stopLoadingSound();
-      playPageLoadChime();
-    });
-  } else {
-    // Already loaded (script at bottom of body)
-    playPageLoadChime();
-  }
+  // ==== PAGE LOAD — skip initial chime (handled by loader.php) ====
+  // The loader component plays its own loading ticks + completion chime.
+  // sfx.js only fires the page load chime on AJAX-based page transitions.
   window.addEventListener('load', function () {
     stopLoadingSound();
   });

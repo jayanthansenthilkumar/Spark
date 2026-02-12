@@ -55,6 +55,7 @@ unset($_SESSION['flash_message'], $_SESSION['flash_type'], $_SESSION['success'],
 </head>
 
 <body>
+    <?php include 'includes/loader.php'; ?>
     <div class="dashboard-container">
         <?php include 'includes/sidebar.php'; ?>
 

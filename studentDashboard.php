@@ -98,6 +98,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 </head>
 
 <body>
+    <?php include 'includes/loader.php'; ?>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <!-- Sidebar -->

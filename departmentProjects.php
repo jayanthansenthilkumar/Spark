@@ -86,6 +86,7 @@ unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 </head>
 
 <body>
+    <?php include 'includes/loader.php'; ?>
     <div class="dashboard-container">
         <?php include 'includes/sidebar.php'; ?>
 

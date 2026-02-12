@@ -85,6 +85,7 @@ if ($isAdminOrAffairs) {
 </head>
 
 <body>
+    <?php include 'includes/loader.php'; ?>
     <div class="dashboard-container">
         <?php include 'includes/sidebar.php'; ?>
 

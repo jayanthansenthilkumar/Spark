@@ -64,6 +64,7 @@ $featuredAnnouncement = mysqli_fetch_assoc($featuredAnn);
 </head>
 
 <body class="tech-landing">
+    <?php include 'includes/loader.php'; ?>
     <!-- Particle Canvas Background -->
     <canvas id="particleCanvas"></canvas>
 

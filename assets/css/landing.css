@@ -1099,3 +1099,25 @@
 .track-panel, .tech-faq-toggle {
   cursor: url('../cursor/cursor-pointer.png'), pointer;
 }
+
+/* Landing page loader — match spark-bg */
+.tech-landing .spark-loader-overlay {
+  background: var(--spark-bg, #FAF9F6);
+}
+
+.tech-landing .spark-loader-spinner {
+  border-color: var(--spark-border, #E8E4DD);
+  border-top-color: var(--spark-accent, #D97706);
+}
+
+.tech-landing .spark-loader-dots span {
+  background: var(--spark-accent, #D97706);
+}
+
+.tech-landing .spark-loader-bar {
+  background: var(--spark-border, #E8E4DD);
+}
+
+.tech-landing .spark-loader-bar-fill {
+  background: var(--spark-accent, #D97706);
+}

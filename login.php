@@ -56,6 +56,7 @@ if (isset($_SESSION['user_id']) && !$success && empty($error)) {
 </head>
 
 <body>
+    <?php include 'includes/loader.php'; ?>
     <!-- Login Form -->
     <div class="auth-container">
         <div class="auth-grid-split">
