@@ -99,6 +99,13 @@
   var overlay = document.getElementById('sparkLoader');
   if (!bar || !overlay || !gate) return;
 
+  // Show loader only once per session
+  if (sessionStorage.getItem('sparkLoaderShown')) {
+    if (gate.parentNode) gate.parentNode.removeChild(gate);
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    return;
+  }
+
   var progress = 0;
   var audioCtx = null;
   var masterGain = null;
@@ -298,6 +305,7 @@
     progress = 100;
     bar.style.width = '100%';
     playLoaderComplete();
+    sessionStorage.setItem('sparkLoaderShown', '1');
     setTimeout(function() {
       overlay.classList.add('loaded');
       setTimeout(function() {
