@@ -1121,3 +1121,43 @@
 .tech-landing .spark-loader-bar-fill {
   background: var(--spark-accent, #D97706);
 }
+
+/* Landing loader mobile fixes */
+@media (max-width: 768px) {
+  .tech-landing .spark-loader-overlay {
+    padding: 0 1.5rem;
+  }
+
+  .tech-landing .spark-loader-spinner {
+    width: 42px;
+    height: 42px;
+    border-width: 3px;
+  }
+
+  .tech-landing .spark-loader-bar {
+    width: 140px;
+  }
+
+  .tech-landing .spark-loader-bar-fill {
+    background: linear-gradient(
+      90deg,
+      var(--spark-accent, #D97706) 0%,
+      #F59E0B 50%,
+      var(--spark-accent, #D97706) 100%
+    );
+    background-size: 200% 100%;
+    animation: loaderBarShimmer 1.5s ease-in-out infinite;
+  }
+}
+
+@media (max-width: 480px) {
+  .tech-landing .spark-loader-spinner {
+    width: 36px;
+    height: 36px;
+    border-width: 2.5px;
+  }
+
+  .tech-landing .spark-loader-bar {
+    width: 110px;
+  }
+}
