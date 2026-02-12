@@ -4,7 +4,7 @@
     <div class="spark-loader-dots">
         <span></span><span></span><span></span>
     </div>
-    <div class="spark-loader-text">Loading</div>
+    <div class="spark-loader-text">SPARK'26</div>
     <div class="spark-loader-bar">
         <div class="spark-loader-bar-fill" id="sparkLoaderBar"></div>
     </div>
